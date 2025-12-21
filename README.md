@@ -23,6 +23,7 @@ Core innovations and design decisions:
 | `documentation-derivation-strategy.md` | 4-level AI derivation hierarchy (L0→L1→L2→L3) |
 | `test-driven-ai-development.md` | TDAI - Tests as constraints for AI |
 | `bidirectional-traceability-design.md` | Docs ↔ Code linking strategy |
+| `structured-interview-pattern.md` | **4th Pillar** - AI asks before deciding |
 | `claude-code-as-platform.md` | Skills/MCP architecture decisions |
 | `derivation-example-walkthrough.md` | Concrete end-to-end example |
 | `poc-tooling-design.md` | Implementation blueprint |
@@ -45,8 +46,13 @@ Critical assessments by Claude models:
 Proof of Concept validation:
 
 - **L0→L1→L2→L3 Chain:** 53 lines → 1390 lines (26x expansion)
-- **TDAI Validation:** 33% negative tests, 13% "should NOT"
+- **TDAI Validation:** 33% negative tests, 20% "should NOT"
 - **RAG Enhancement:** 3 sections → 7 sections (guideline-compliant)
+- **Structured Interview:** All 4 derivation skills now use SI pattern
+  - L0→L1: 15 decision points (SC, EH, AU, SE, ST)
+  - Domain: 16 decision points (EVO, AGG, REF, INV)
+  - L1→L2: 15 decision points (API, COM, SVC, SEC, DAT)
+  - L2→L3: 20 decision points (TST, MOC, TDA, COV, ENV)
 
 ## Related Repositories
 
