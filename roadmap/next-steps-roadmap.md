@@ -1,10 +1,10 @@
 ---
 title: "Loom Next Steps Roadmap"
 status: "active"
-version: "1.2.0"
+version: "1.3.0"
 created: "2025-12-21"
 last_updated: "2025-12-21"
-context: "Phase 2 in progress - Skill unification and validation complete"
+context: "Phase 2 mostly complete, Phase 2B (UI) planned"
 current_score: "9.2/10 (Opus v03)"
 ---
 
@@ -251,6 +251,65 @@ Week 2:
 
 ---
 
+## Phase 2B: UI/UX Derivation (P1)
+
+**Cél:** Frontend/UI dokumentáció deriválás külön skill chain-nel
+
+**Részletes terv:** [ux-ui-derivation-architecture.md](../thinking/ux-ui-derivation-architecture.md)
+
+### Kulcs Döntések
+
+| Döntés | Választás | Indoklás |
+|--------|-----------|----------|
+| UI = fork of backend? | **NEM** | UI-nak saját L0 inputja van (mockups) |
+| Traceability link | **Business Rules** | BR a híd backend és frontend között |
+| Cross-cutting | **Pattern library** | Egyszer deriválva, többször hivatkozva |
+| Skill architecture | **Külön chain** | `/loom-ui derive` |
+
+### UI Derivation Levels
+
+```
+L0-UI: Mockups + Design Tokens + User Stories
+    │
+    ▼
+L1-UI: UI Interaction Stories (US-UI-*) + UI Acceptance Criteria (AC-UI-*)
+    │
+    ▼
+L2-UI: Component Specs + State Machines + Interaction Patterns
+    │
+    ▼
+L3-UI: E2E Tests + Visual Regression + Manual QA Checklists
+```
+
+### UI-specific SI Katalógus
+
+**L1-UI (7 kérdés):** Component granularity, State mgmt, Styling, Design system, A11y, Navigation, Forms
+
+**L2-UI (5 kérdés):** Loading states, Error display, Empty states, Validation timing, Transitions
+
+**L3-UI (5 kérdés):** E2E framework, Visual regression, Storybook, Manual QA depth, Device coverage
+
+**Cross-cutting (egyszer per projekt, 4 kérdés):** Loading strategy, Error display, Validation timing, Empty state style
+
+### Implementációs Fázisok
+
+| Fázis | Leírás | Prioritás |
+|-------|--------|-----------|
+| 2B.1 | Cross-cutting patterns template | Magas |
+| 2B.2 | `/loom-ui derive --level L1` skill | Magas |
+| 2B.3 | `/loom-ui derive --level L2` skill | Közepes |
+| 2B.4 | `/loom-ui derive --level L3` skill | Közepes |
+| 2B.5 | `/loom-ui validate` skill | Alacsony |
+
+### Referencia Projekt
+
+A döntések egy valós UX-UI dokumentáció elemzésén alapulnak:
+- Lokáció: `loom-project/tmp/ux-ui/`
+- Projekt: Flux Print Shop Scheduling System
+- Méret: 34 fájl, teljes UI specifikáció
+
+---
+
 ## Phase 3: Multi-Developer Test (P1)
 
 **Cél:** Bizonyítani, hogy Loom működik csapatban
@@ -440,12 +499,18 @@ Mielőtt elkezdjük, a következő döntések kellenek:
 - ✅ 2.3 Self-Learning System - RAG multi-source, SI decision reuse
 - ⬜ 2.4 Error Handling Improvement - TODO
 
+**Phase 2B TERVEZVE:**
+- ⬜ 2B.1 Cross-cutting patterns template
+- ⬜ 2B.2 `/loom-ui derive --level L1` skill
+- ⬜ 2B.3-5 További UI skill-ek
+
 **Választási lehetőségek:**
 
 | Opció | Leírás |
 |-------|--------|
 | A | **Phase 2.4** - Error Handling Improvement befejezése |
-| B | **Phase 3** - Multi-Developer Test indítása |
-| C | **Integration Test** - Skills + RAG Self-Learning együttes tesztelése |
+| B | **Phase 2B** - UI/UX Derivation skill chain kezdése |
+| C | **Phase 3** - Multi-Developer Test indítása |
+| D | **Integration Test** - Skills + RAG Self-Learning együttes tesztelése |
 
-**Ajánlás:** C opció - Integráljuk a Self-Learning System-et a skill-ekbe és teszteljük egy új domain-en (pl. Inventory Management), hogy lássuk a SI decision reuse működését.
+**Ajánlás:** B opció - A UI derivation skill chain alapozza meg a full-stack dokumentáció deriválást. A valós UX-UI referencia projekt elemzése alapján tiszta architektúrával rendelkezünk.
