@@ -1,232 +1,151 @@
 ---
 status: draft
-derived-from: "tmp/poc/input/user-stories.md"
-derived-at: "2025-12-20T18:30:00Z"
-derived-by: "loom-derive skill v1.0"
-loom-version: "2.0.0"
+derived-from: "loom-project/poc/input/user-stories.md"
+derived-at: "2025-12-21T12:30:00Z"
+derived-by: "loom-derive skill v2.0 (Structured Interview)"
+loom-version: "3.0.0"
+structured-interview:
+  decision-points-resolved: 6
+  from-user-answers: 4
+  from-input: 2
 ---
 
-# Business Rules & Domain Invariants – Quote Acceptance
+# Business Rules – Quote Acceptance
 
-Derived from user stories using Loom L0→L1 derivation.
+## US-QUOTE-003 – Customer accepts a quote online
 
-These rules are technology-agnostic and must hold regardless of implementation.
-
----
-
-## Quote Status Transitions
-
-### BR-QUOTE-001 – Only Sent quotes can be accepted {#br-quote-001}
+### BR-QUOTE-001 – Only Sent quotes can be accepted
 
 **Rule:**
 A quote can only be accepted if its current status is `Sent`.
-Quotes in any other status (Draft, Expired, Rejected, Accepted) cannot be accepted.
 
 **Invariant:**
-```
 Quote.accept() MUST only succeed when Quote.status === "Sent"
-```
 
 **Enforcement:**
-- **Precondition:** `Quote.status === "Sent"`
-- **Violation Behavior:** Reject acceptance request, return error response
+- **Precondition:** Quote.status === "Sent"
+- **Violation Behavior:** Reject acceptance, return error
 - **Error Code:** `INVALID_QUOTE_STATUS`
-- **HTTP Status:** 400 Bad Request
 
-**Test Scenarios:**
-```
-✓ Accept quote with status="Sent" → Success
-✗ Accept quote with status="Draft" → INVALID_QUOTE_STATUS
-✗ Accept quote with status="Expired" → INVALID_QUOTE_STATUS
-✗ Accept quote with status="Rejected" → INVALID_QUOTE_STATUS
-✗ Accept quote with status="Accepted" → INVALID_QUOTE_STATUS (idempotent or error)
-```
+**Decision Points Resolved:**
+- ST-1: Only from "Sent" status (From input)
+
+**Traceability:**
+- User Story: user-stories.md#us-quote-003
+- Acceptance Criteria: AC-QUOTE-003-1
+- Entity: ENT-Quote
+
+---
+
+### BR-QUOTE-002 – Quote must be within validity period
+
+**Rule:**
+A quote can only be accepted if the current date is before or equal to the quote's expiration date.
+
+**Invariant:**
+Quote.accept() MUST only succeed when NOW() <= Quote.validUntil
+
+**Enforcement:**
+- **Precondition:** Current timestamp <= Quote.validUntil
+- **Violation Behavior:** Reject acceptance with blocking error
+- **Error Code:** `QUOTE_EXPIRED`
+
+**Decision Points Resolved:**
+- EH-1: Expired quote is blocking error (User answer)
+
+**Traceability:**
+- User Story: user-stories.md#us-quote-003
+- Acceptance Criteria: AC-QUOTE-003-1
+- Entity: ENT-Quote
+
+---
+
+### BR-QUOTE-003 – Quote acceptance creates Order
+
+**Rule:**
+When a quote is accepted, an Order MUST be automatically created from the quote data.
+
+**Invariant:**
+For every Quote with status "Accepted", exactly one Order MUST exist with Order.quoteId === Quote.id
+
+**Enforcement:**
+- **Precondition:** Quote.accept() succeeds
+- **Violation Behavior:** Transaction rollback if Order creation fails
+- **Error Code:** `ORDER_CREATION_FAILED`
+
+**Decision Points Resolved:**
+- SE-3: Order created automatically (From input)
 
 **Traceability:**
 - User Story: user-stories.md#us-quote-003
 - Acceptance Criteria: AC-QUOTE-003-2
-- Entity: ENT-Quote
-
----
-
-### BR-QUOTE-002 – Accepted quotes are immutable {#br-quote-002}
-
-**Rule:**
-Once a quote reaches `Accepted` status, its content (items, prices, terms) MUST NOT be modified.
-Only metadata (e.g., related order reference) may be updated.
-
-**Invariant:**
-```
-IF Quote.status === "Accepted" THEN Quote.content IS immutable
-```
-
-**Enforcement:**
-- **Precondition:** Any modification attempt on Quote with status `Accepted`
-- **Violation Behavior:** Reject modification, return error
-- **Error Code:** `QUOTE_IMMUTABLE`
-- **HTTP Status:** 409 Conflict
-
-**Test Scenarios:**
-```
-✗ Modify line items on Accepted quote → QUOTE_IMMUTABLE
-✗ Change prices on Accepted quote → QUOTE_IMMUTABLE
-✗ Update terms on Accepted quote → QUOTE_IMMUTABLE
-✓ Add order reference to Accepted quote → Success (metadata only)
-```
-
-**Traceability:**
-- User Story: user-stories.md#us-quote-003
-- Acceptance Criteria: AC-QUOTE-003-4
-- Entity: ENT-Quote
-
----
-
-### BR-QUOTE-003 – Quote acceptance must be recorded with full audit trail {#br-quote-003}
-
-**Rule:**
-Every quote acceptance MUST record: customer identity, timestamp, quote version, and source metadata.
-This record MUST be immutable for audit purposes.
-
-**Invariant:**
-```
-FOR EVERY Quote WHERE status === "Accepted":
-  QuoteAcceptance record MUST exist WITH:
-    - customer_id NOT NULL
-    - accepted_at NOT NULL
-    - quote_version NOT NULL
-```
-
-**Enforcement:**
-- **Precondition:** Quote.accept() transaction
-- **Violation Behavior:** Transaction rollback if audit record cannot be created
-- **Error Code:** `AUDIT_RECORD_FAILED`
-- **Implementation:** Database transaction ensures atomicity
-
-**Traceability:**
-- User Story: user-stories.md#us-quote-003
-- Acceptance Criteria: AC-QUOTE-003-3
-- Entity: ENT-Quote, ENT-QuoteAcceptance
-
----
-
-## Quote-Order Relationship
-
-### BR-QUOTE-004 – Quote acceptance MUST create an Order {#br-quote-004}
-
-**Rule:**
-When a quote is accepted, an Order MUST be automatically created.
-The order creation is part of the same transaction as the quote acceptance.
-
-**Invariant:**
-```
-FOR EVERY Quote WHERE status === "Accepted":
-  EXACTLY ONE Order MUST exist WHERE Order.quote_id === Quote.id
-```
-
-**Enforcement:**
-- **Precondition:** Quote.accept() succeeds
-- **Violation Behavior:** Rollback entire transaction if Order creation fails
-- **Error Code:** `ORDER_CREATION_FAILED`
-- **Implementation:** Transactional saga or two-phase commit
-
-**Test Scenarios:**
-```
-✓ Accept quote → Order created with correct quote_id
-✓ Accept quote → Order contains all quote line items
-✗ Order creation fails → Quote remains in "Sent" status (rollback)
-```
-
-**Traceability:**
-- User Story: user-stories.md#us-quote-003
-- Acceptance Criteria: AC-QUOTE-003-5
 - Entity: ENT-Quote, ENT-Order
 
 ---
 
-### BR-QUOTE-005 – Order must reference originating Quote {#br-quote-005}
+### BR-QUOTE-004 – Acceptance reversible until Order fulfilled
 
 **Rule:**
-An Order created from quote acceptance MUST maintain a reference to the originating Quote.
-This reference MUST NOT be modified after Order creation.
+A quote acceptance can be reversed (and its Order cancelled) only if the Order has not been fulfilled.
 
 **Invariant:**
-```
-IF Order.origin === "QUOTE_ACCEPTANCE" THEN:
-  Order.quote_id MUST NOT be NULL
-  Order.quote_id MUST reference valid Quote
-  Order.quote_id IS immutable
-```
+Quote.reverseAcceptance() MUST only succeed when Order.status NOT IN ("Fulfilled", "Shipped", "PartiallyShipped")
 
 **Enforcement:**
-- **Precondition:** Order creation from quote acceptance
-- **Violation Behavior:** Reject Order modification that would change quote_id
-- **Error Code:** `IMMUTABLE_REFERENCE`
+- **Precondition:** Associated Order is not fulfilled or shipped
+- **Violation Behavior:** Reject reversal, return conflict error
+- **Error Code:** `ORDER_ALREADY_FULFILLED`
+
+**Decision Points Resolved:**
+- ST-2: Reversible until Order is fulfilled (User answer)
 
 **Traceability:**
 - User Story: user-stories.md#us-quote-003
-- Acceptance Criteria: AC-QUOTE-003-5
-- Entity: ENT-Order, ENT-Quote
+- Acceptance Criteria: AC-QUOTE-003-3
+- Entity: ENT-Quote, ENT-Order
 
 ---
 
-## Quote Validity
-
-### BR-QUOTE-006 – Expired quotes cannot be accepted {#br-quote-006}
+### BR-QUOTE-005 – Organization-level authorization for quote acceptance
 
 **Rule:**
-A quote cannot be accepted if the current date is past the quote's validity end date.
-The validity check MUST occur at acceptance time, not at page load.
+Any authenticated user belonging to the customer's organization can accept a quote addressed to that organization.
 
 **Invariant:**
-```
-Quote.accept() MUST fail IF NOW() > Quote.valid_until
-```
+Quote.accept(user) MUST only succeed when user.organizationId === Quote.customer.organizationId
 
 **Enforcement:**
-- **Precondition:** `NOW() <= Quote.valid_until`
-- **Violation Behavior:** Reject acceptance with expiry error
-- **Error Code:** `QUOTE_EXPIRED`
-- **HTTP Status:** 410 Gone
+- **Precondition:** Accepting user belongs to customer's organization
+- **Violation Behavior:** Reject with authorization error
+- **Error Code:** `UNAUTHORIZED_ORGANIZATION`
 
-**Test Scenarios:**
-```
-✓ Accept quote within validity period → Success
-✗ Accept quote past valid_until → QUOTE_EXPIRED
-✗ Accept quote on valid_until date at 23:59:59 → Success
-✗ Accept quote on valid_until date + 1 second → QUOTE_EXPIRED
-```
-
-**Traceability:**
-- User Story: user-stories.md#us-quote-003 (implied from context)
-- Acceptance Criteria: AC-QUOTE-003-2
-- Entity: ENT-Quote
-
----
-
-## Cross-Entity Invariants
-
-### INV-QUOTE-001 – Quote-Order consistency {#inv-quote-001}
-
-**Invariant:**
-All Orders created from quote acceptance MUST have line items that match the accepted Quote's line items at acceptance time.
-
-```
-FOR Order WHERE origin === "QUOTE_ACCEPTANCE":
-  Order.line_items MUST equal Quote.line_items (at acceptance snapshot)
-```
+**Decision Points Resolved:**
+- AU-1: Any user from customer's organization (User answer)
 
 **Traceability:**
 - User Story: user-stories.md#us-quote-003
-- Acceptance Criteria: AC-QUOTE-003-5
-- Entity: ENT-Quote, ENT-Order, ENT-LineItem
+- Acceptance Criteria: AC-QUOTE-003-1, AC-QUOTE-003-5
+- Entity: ENT-Quote, ENT-Customer, ENT-User
 
 ---
 
-## Validation Checklist
+### BR-QUOTE-006 – Mandatory notifications on acceptance
 
-- [x] 6 business rules + 1 invariant generated
-- [x] All BR IDs are unique (BR-QUOTE-001 through BR-QUOTE-006, INV-QUOTE-001)
-- [x] All rules have enforcement mechanisms defined
-- [x] All rules have error codes specified
-- [x] All rules have traceability links
-- [x] Test scenarios included for key rules
+**Rule:**
+When a quote is accepted, notifications MUST be sent to: the sales rep, the customer, and the fulfillment team.
+
+**Invariant:**
+Quote.accept() MUST trigger notifications to all three parties before completion
+
+**Enforcement:**
+- **Precondition:** Quote acceptance succeeds
+- **Violation Behavior:** Log warning if notification fails, but don't block acceptance
+- **Error Code:** `NOTIFICATION_FAILED` (non-blocking)
+
+**Decision Points Resolved:**
+- SE-1: Notify sales rep + customer + fulfillment team (User answer)
+
+**Traceability:**
+- User Story: user-stories.md#us-quote-003
+- Acceptance Criteria: AC-QUOTE-003-4
+- Entity: ENT-Quote, ENT-Notification

@@ -1,31 +1,41 @@
 ---
 status: draft
-derived-from: "tmp/poc/input/user-stories.md"
-derived-at: "2025-12-20T18:30:00Z"
-derived-by: "loom-derive skill v1.0"
-loom-version: "2.0.0"
+derived-from: "loom-project/poc/input/user-stories.md"
+derived-at: "2025-12-21T12:30:00Z"
+derived-by: "loom-derive skill v2.0 (Structured Interview)"
+loom-version: "3.0.0"
+structured-interview:
+  decision-points-resolved: 6
+  from-user-answers: 4
+  from-input: 2
 ---
 
 # Acceptance Criteria – Quote Acceptance
 
-Derived from user stories using Loom L0→L1 derivation.
+## US-QUOTE-003 – Customer accepts a quote online
 
----
+### AC-QUOTE-003-1 – Accept quote from Sent status only
 
-## US-QUOTE-003: Customer accepts a quote online
-
-### AC-QUOTE-003-1 – Customer can access quote via secure link {#ac-quote-003-1}
-
-**Given** a customer has received a quote notification email
-**And** the quote has status `Sent`
-**When** the customer clicks the secure link in the email
-**Then** the customer is directed to the quote detail page in the portal
-**And** the customer can view all quote details (items, prices, terms, validity)
+**Given** a customer user from the customer's organization is authenticated
+**And** a quote exists with status `Sent`
+**And** the quote is within its validity period
+**When** the customer accesses the quote via secure link or portal
+**And** clicks the "Accept" action
+**Then** the system records the acceptance with:
+  - User identity (authenticated user from customer's organization)
+  - Timestamp (ISO 8601 format)
+  - Quote version accepted
+**And** the quote status changes to `Accepted`
 
 **Error Cases:**
-- Quote not found → HTTP 404, message: "Quote not found"
-- Quote expired → HTTP 410, message: "This quote has expired"
-- Invalid/tampered link → HTTP 403, message: "Invalid access link"
+- Quote status is not `Sent` → Error: "Only sent quotes can be accepted" (HTTP 400)
+- Quote has expired → Error: "Quote validity period has ended" (HTTP 400)
+- User not from customer's organization → Error: "Unauthorized" (HTTP 403)
+
+**Decision Points Resolved:**
+- ST-1: Only from "Sent" status (From input)
+- AU-1: Any user from customer's organization (User answer)
+- EH-1: Expired quote is blocking error (User answer)
 
 **Traceability:**
 - User Story: user-stories.md#us-quote-003
@@ -33,108 +43,106 @@ Derived from user stories using Loom L0→L1 derivation.
 
 ---
 
-### AC-QUOTE-003-2 – Customer can accept quote with single action {#ac-quote-003-2}
-
-**Given** a customer is viewing a quote with status `Sent`
-**And** the quote is within its validity period
-**When** the customer clicks the "Accept Quote" button
-**Then** the system displays a confirmation dialog
-**And** upon confirmation, the acceptance is processed
-
-**Error Cases:**
-- Quote status is not `Sent` → Error: "Only sent quotes can be accepted" (HTTP 400)
-- Quote has expired → Error: "Quote validity period has ended" (HTTP 400)
-- Customer not authenticated → Redirect to login
-
-**Traceability:**
-- User Story: user-stories.md#us-quote-003
-- Entity: ENT-Quote
-- Business Rule: BR-QUOTE-001
-
----
-
-### AC-QUOTE-003-3 – System records acceptance details {#ac-quote-003-3}
-
-**Given** a customer has confirmed quote acceptance
-**When** the acceptance is processed
-**Then** the system records:
-  - Customer identity (user ID, email)
-  - Acceptance timestamp (ISO 8601 UTC)
-  - Quote version/revision accepted
-  - IP address and user agent (for audit)
-**And** this acceptance record is immutable
-
-**Error Cases:**
-- Database write failure → Transaction rollback, error: "Failed to record acceptance"
-
-**Traceability:**
-- User Story: user-stories.md#us-quote-003
-- Entity: ENT-Quote, ENT-QuoteAcceptance
-- Business Rule: BR-QUOTE-003
-
----
-
-### AC-QUOTE-003-4 – Quote status transitions to Accepted {#ac-quote-003-4}
-
-**Given** the acceptance has been successfully recorded
-**When** the acceptance transaction commits
-**Then** the quote status changes from `Sent` to `Accepted`
-**And** the status change timestamp is recorded
-**And** the quote becomes read-only (no further modifications allowed)
-
-**Error Cases:**
-- Concurrent modification → Optimistic lock failure, retry or error
-
-**Traceability:**
-- User Story: user-stories.md#us-quote-003
-- Entity: ENT-Quote
-- Business Rule: BR-QUOTE-002
-
----
-
-### AC-QUOTE-003-5 – Order is automatically created from accepted quote {#ac-quote-003-5}
+### AC-QUOTE-003-2 – Order creation on acceptance
 
 **Given** a quote has been successfully accepted
-**When** the quote status becomes `Accepted`
+**When** the acceptance is confirmed
 **Then** an Order is automatically created with:
-  - Reference to the accepted Quote (quote_id)
-  - Copy of all quote line items (items, quantities, prices)
-  - Customer reference from the quote
+  - Reference to the accepted Quote (quoteId)
+  - All line items copied from the Quote
+  - Customer information from the Quote
   - Order status set to `Pending`
-**And** the Order ID is returned to the customer
+**And** the orderId is returned in the acceptance response
 
 **Error Cases:**
-- Order creation fails → Quote acceptance is rolled back
-- Inventory unavailable → Order created with `PendingReview` status
+- Order creation fails → Transaction rollback, quote remains `Sent`, error logged
+
+**Decision Points Resolved:**
+- SE-3: Order created automatically (From input)
 
 **Traceability:**
 - User Story: user-stories.md#us-quote-003
 - Entity: ENT-Quote, ENT-Order
-- Business Rule: BR-QUOTE-004
 
 ---
 
-### AC-QUOTE-003-6 – Customer receives acceptance confirmation {#ac-quote-003-6}
+### AC-QUOTE-003-3 – Acceptance can be reversed until Order fulfilled
 
-**Given** a quote has been accepted and order created
-**When** the transaction completes successfully
-**Then** the customer sees a confirmation page with:
-  - Quote acceptance confirmation
-  - New Order ID and summary
-  - Next steps information
-**And** the customer receives a confirmation email
+**Given** a quote has status `Accepted`
+**And** the associated Order has NOT been fulfilled (status is not `Fulfilled` or `Shipped`)
+**When** an authorized user requests to reverse the acceptance
+**Then** the Quote status reverts to `Sent`
+**And** the associated Order is cancelled (status → `Cancelled`)
+**And** an audit trail entry is created recording the reversal
+**And** the quote can be accepted again
+
+**Error Cases:**
+- Order already fulfilled → Error: "Cannot reverse, order is already fulfilled" (HTTP 409)
+- Order partially shipped → Error: "Cannot reverse, order has shipments" (HTTP 409)
+
+**Decision Points Resolved:**
+- ST-2: Reversible until Order is fulfilled (User answer)
 
 **Traceability:**
 - User Story: user-stories.md#us-quote-003
-- Entity: ENT-Quote, ENT-Order, ENT-Customer
+- Entity: ENT-Quote, ENT-Order
 
 ---
 
-## Validation Checklist
+### AC-QUOTE-003-4 – Notifications on acceptance
 
-- [x] 6 acceptance criteria generated (target: 4-7)
-- [x] All criteria use Given/When/Then format
-- [x] All AC IDs are unique (AC-QUOTE-003-1 through AC-QUOTE-003-6)
-- [x] All criteria have traceability links
-- [x] Error cases defined for each criterion
-- [x] Happy path and error paths covered
+**Given** a quote has been successfully accepted
+**When** the acceptance is processed
+**Then** the following notifications are sent:
+  - **Sales rep** who created the quote: email + in-app notification
+  - **Customer** (accepting user): confirmation email with order details
+  - **Fulfillment team**: work queue notification with order reference
+
+**Decision Points Resolved:**
+- SE-1: Notify sales rep + customer + fulfillment team (User answer)
+
+**Traceability:**
+- User Story: user-stories.md#us-quote-003
+- Entity: ENT-Quote, ENT-Order, ENT-Notification
+
+---
+
+### AC-QUOTE-003-5 – Secure access to quote
+
+**Given** a quote has been sent to a customer
+**When** the customer receives the quote link
+**Then** the link contains a secure token (UUID or signed URL)
+**And** the customer must authenticate before viewing quote details
+**And** only users from the customer's organization can access the quote
+
+**Error Cases:**
+- Invalid or expired token → Error: "Invalid quote link" (HTTP 404)
+- User from different organization → Error: "Access denied" (HTTP 403)
+
+**Decision Points Resolved:**
+- AU-1: Any user from customer's organization (User answer)
+
+**Traceability:**
+- User Story: user-stories.md#us-quote-003
+- Entity: ENT-Quote, ENT-Customer
+
+---
+
+### AC-QUOTE-003-6 – Audit trail for acceptance
+
+**Given** any acceptance-related action occurs (accept, reverse)
+**When** the action is processed
+**Then** an audit log entry is created with:
+  - Action type (ACCEPT, REVERSE)
+  - User who performed the action
+  - Timestamp
+  - Quote ID and version
+  - Order ID (if applicable)
+  - Previous and new status
+
+**Decision Points Resolved:**
+- SE-2: Audit trail required for mutations (Default - conservative)
+
+**Traceability:**
+- User Story: user-stories.md#us-quote-003
+- Entity: ENT-Quote, ENT-AuditLog
