@@ -1,10 +1,10 @@
 ---
 title: "Loom Next Steps Roadmap"
 status: "active"
-version: "1.1.0"
+version: "1.2.0"
 created: "2025-12-21"
 last_updated: "2025-12-21"
-context: "Phase 1 complete, Booking System validated"
+context: "Phase 2 in progress - Skill unification and validation complete"
 current_score: "9.2/10 (Opus v03)"
 ---
 
@@ -22,6 +22,9 @@ current_score: "9.2/10 (Opus v03)"
 | Structured Interview | ✅ Validált | 66 decision point, Entity/VO teszt |
 | 4 skill v2.0 | ✅ Kész | loom-derive, domain, l2, l3 |
 | **Phase 1: Booking System** | ✅ **Kész** | 8 fájl, 3576 sor, 20 SI döntés |
+| **Phase 2.1: Skill Egységesítés** | ✅ **Kész** | `/loom` dispatcher + 4 specialized skill |
+| **Phase 2.2: Validation Skill** | ✅ **Kész** | `loom-validate` 4 check típussal |
+| **Phase 2.3: Self-Learning System** | ✅ **Kész** | RAG multi-source, SI decision reuse |
 
 ### Phase 1 Eredmények
 
@@ -156,43 +159,87 @@ Week 2:
 
 ---
 
-## Phase 2: Developer Experience (P1)
+## Phase 2: Developer Experience (P1) - IN PROGRESS
 
 **Cél:** A skill-ek használatát egyszerűbbé és robusztusabbá tenni
 
-### 2.1 Skill Egységesítés
+### 2.1 Skill Egységesítés ✅ KÉSZ
 
-**Jelenlegi állapot:**
-```bash
-/loom-derive --input-file user-stories.md --output-dir output/
-/loom-derive-domain --input-file vocabulary.md --output-dir output/
-/loom-derive-l2 --contracts-file ... --ac-file ... --br-file ...
-/loom-derive-l3 --contracts-file ... --ac-file ... --br-file ...
-```
-
-**Cél állapot:**
-```bash
-# Unified interface
-/loom derive --level L1 --input user-stories.md
-/loom derive --level domain --input vocabulary.md
-/loom derive --level L2 --input ac.md br.md
-/loom derive --level L3 --input contracts.md
-
-# Vagy auto-detect
-/loom derive --auto  # detects current level, derives next
-```
-
-### 2.2 Validation Skill
+**Megoldás:** Dispatcher pattern - unified `/loom` command routes to specialized skills
 
 ```bash
-/loom validate --check traceability   # All IDs exist and linked
-/loom validate --check format         # YAML frontmatter, markdown
-/loom validate --check coverage       # All requirements have tests
-/loom validate --check consistency    # No contradictions
-/loom validate --all                  # Run all checks
+# Unified interface (implemented)
+/loom derive --level L1 --input user-stories.md --output-dir output/
+/loom derive --level domain --input stories.md,vocabulary.md --output-dir output/
+/loom derive --level L2 --input ac.md,br.md --output-dir output/
+/loom derive --level L3 --input contracts.md,ac.md,br.md --output-dir output/
+
+# Validation
+/loom validate --dir output/ --check all
 ```
 
-### 2.3 Error Handling Improvement
+**Implementáció:**
+- `loom.md` - Dispatcher skill, routes to specialized skills
+- Preserves specialized skill intelligence (focused prompts, SI catalogs)
+- Consistent argument mapping
+
+### 2.2 Validation Skill ✅ KÉSZ
+
+```bash
+/loom validate --dir output/ --check traceability  # All IDs exist and linked
+/loom validate --dir output/ --check format        # YAML frontmatter, markdown
+/loom validate --dir output/ --check coverage      # All requirements have tests
+/loom validate --dir output/ --check consistency   # No contradictions
+/loom validate --dir output/ --check all           # Run all checks (default)
+```
+
+**Implementáció:** `loom-validate.md` with 4 check types
+
+### 2.3 Self-Learning System ✅ KÉSZ
+
+**Eredeti terv:** SI Answer Cache (külön `.loom/si-decisions.yaml` fájl)
+
+**Jobb megoldás:** Self-Learning System - a RAG tudásbázis folyamatosan bővül
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│                     SELF-LEARNING SYSTEM                           │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                    │
+│  ┌──────────────┐                                                 │
+│  │  Guidelines  │ ─────────────┐                                  │
+│  │  (priority 1)│              │                                  │
+│  └──────────────┘              │                                  │
+│                                ▼                                  │
+│  ┌──────────────┐       ┌──────────────┐       ┌──────────────┐  │
+│  │   Project    │ ─────►│  RAG Engine  │◄──────│   Derive     │  │
+│  │   Docs (p2)  │       │  (ChromaDB)  │       │   Request    │  │
+│  └──────────────┘       └──────┬───────┘       └──────────────┘  │
+│         ▲                      │                                  │
+│         │                      │ retrieve context                 │
+│         │                      ▼                                  │
+│         │               ┌──────────────┐                         │
+│         └───────────────│   Derived    │ (includes SI decisions) │
+│           re-index      │   Document   │                         │
+│                         └──────────────┘                         │
+│                                                                    │
+│  The system learns from its own output!                           │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+**Előnyök:**
+1. **Single Source of Truth** - SI döntések a dokumentumokban élnek (YAML frontmatter)
+2. **Nincs külön cache fájl** - a tudásbázis = projekt dokumentumok
+3. **Automatikus tanulás** - új deriválás → re-index → jobb kontextus
+4. **Priority-based retrieval** - projekt docs (p2) > guidelines (p1)
+
+**Implementáció:** `loom-tooling/rag/rag_engine.py`
+- `KnowledgeSource` class (type, priority)
+- `retrieve_si_decision()` method
+- `retrieve_prioritized()` method
+- `create_self_learning_rag()` helper
+
+### 2.4 Error Handling Improvement (TODO)
 
 **Jelenlegi:** Hibánál a skill elakad
 
@@ -201,22 +248,6 @@ Week 2:
 - Meaningful error messages
 - Recovery suggestions
 - Partial output save
-
-### 2.4 SI Answer Cache
-
-```yaml
-# .loom/si-decisions.yaml
-quote-acceptance:
-  API-1: async  # Order creation
-  COM-1: event-driven
-  SEC-2: attribute-based
-
-booking-system:
-  API-1: sync  # Booking needs immediate confirmation
-  COM-1: direct-call
-```
-
-**Előny:** Ismételt deriválásnál nem kell újra válaszolni
 
 ---
 
@@ -403,32 +434,18 @@ Mielőtt elkezdjük, a következő döntések kellenek:
 
 **Phase 1 KÉSZ!** ✅ Booking System PoC sikeresen validálta a Loom működését új domainen.
 
-**Következő: Phase 2 - Developer Experience**
+**Phase 2 nagyrészt KÉSZ:**
+- ✅ 2.1 Skill Egységesítés - `/loom` dispatcher pattern
+- ✅ 2.2 Validation Skill - 4 check típus (traceability, format, coverage, consistency)
+- ✅ 2.3 Self-Learning System - RAG multi-source, SI decision reuse
+- ⬜ 2.4 Error Handling Improvement - TODO
 
-A Phase 2 fő feladatai:
+**Választási lehetőségek:**
 
-### 2.1 Skill Egységesítés (Prioritás: Magas)
-```bash
-# Jelenlegi (4 külön skill)
-/loom-derive, /loom-derive-domain, /loom-derive-l2, /loom-derive-l3
+| Opció | Leírás |
+|-------|--------|
+| A | **Phase 2.4** - Error Handling Improvement befejezése |
+| B | **Phase 3** - Multi-Developer Test indítása |
+| C | **Integration Test** - Skills + RAG Self-Learning együttes tesztelése |
 
-# Cél (1 unified skill)
-/loom derive --level L1|domain|L2|L3 --input <file>
-```
-
-### 2.2 Validation Skill (Prioritás: Magas)
-```bash
-/loom validate --check traceability   # ID-k léteznek és linkelve
-/loom validate --check coverage       # Minden req-nek van tesztje
-/loom validate --all                  # Minden check
-```
-
-### 2.3 SI Decision Cache (Prioritás: Közepes)
-```yaml
-# .loom/si-decisions.yaml - ne kelljen újra válaszolni
-booking-system:
-  API-1: rest-resource-urls
-  CON-1: pessimistic-locking
-```
-
-**Melyik Phase 2 feladattal kezdjük?**
+**Ajánlás:** C opció - Integráljuk a Self-Learning System-et a skill-ekbe és teszteljük egy új domain-en (pl. Inventory Management), hogy lássuk a SI decision reuse működését.
