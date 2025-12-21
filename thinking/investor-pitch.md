@@ -12,6 +12,38 @@ audience: "AI-savvy investors"
 
 **"Az AI 10x gyorsabban ír kódot, de a projektek nem lesznek 10x gyorsabban készen."**
 
+### Black Box vs Glass Box
+
+A valódi probléma nem az, hogy az AI-generált kód nem működik - **majdnem minden generált kód működik**. A probléma az, hogy **fekete dobozként viselkedik**:
+
+```
+AI-generált kód NÉLKÜL Loom:          AI-generált kód LOOM-mal:
+┌─────────────────────────┐           ┌─────────────────────────┐
+│  "Működik"              │           │  "Működik"              │
+│                         │           │                         │
+│  De:                    │           │  És:                    │
+│  - Miért így?           │           │  - Traceable to US-003  │
+│  - Ki döntötte?         │           │  - SI-AUTH-1: JWT       │
+│  - Hol a spec?          │           │  - BR-QUOTE-001 enforce │
+│  - Hogyan teszteljük?   │           │  - TC-003-1 covers it   │
+│  - Mi történik ha...?   │           │  - Edge cases: 5 teszt  │
+│                         │           │                         │
+│  BLACK BOX              │           │  GLASS BOX              │
+└─────────────────────────┘           └─────────────────────────┘
+```
+
+**A Black Box kód:**
+- Nehéz debugolni (hol keressem a hibát?)
+- Nehéz karbantartani (mi törik el ha változtatok?)
+- Nehéz továbbfejleszteni (hova illik az új feature?)
+- Nehéz onboard-olni (mit csinál ez a kód?)
+
+**A Glass Box kód (Loom-mal):**
+- Minden függvény visszavezethető requirement-re
+- Minden döntés explicit és dokumentált
+- Változás hatása előre látható
+- Új fejlesztő percek alatt érti a kontextust
+
 Miért? Mert a szűk keresztmetszet áttolódott:
 
 ```
