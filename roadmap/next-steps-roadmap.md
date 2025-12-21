@@ -1,10 +1,10 @@
 ---
 title: "Loom Next Steps Roadmap"
 status: "active"
-version: "1.3.0"
+version: "1.4.0"
 created: "2025-12-21"
 last_updated: "2025-12-21"
-context: "Phase 2 mostly complete, Phase 2B (UI) planned"
+context: "Phase 2B (UI) complete, commands restructure done"
 current_score: "9.2/10 (Opus v03)"
 ---
 
@@ -25,6 +25,8 @@ current_score: "9.2/10 (Opus v03)"
 | **Phase 2.1: Skill Egységesítés** | ✅ **Kész** | `/loom` dispatcher + 4 specialized skill |
 | **Phase 2.2: Validation Skill** | ✅ **Kész** | `loom-validate` 4 check típussal |
 | **Phase 2.3: Self-Learning System** | ✅ **Kész** | RAG multi-source, SI decision reuse |
+| **Phase 2B: UI/UX Skill Chain** | ✅ **Kész** | `/loom-ui` 6 command, 21 SI kérdés |
+| **Commands Restructure** | ✅ **Kész** | skills/ → commands/ (explicit invocation) |
 
 ### Phase 1 Eredmények
 
@@ -251,7 +253,7 @@ Week 2:
 
 ---
 
-## Phase 2B: UI/UX Derivation (P1)
+## Phase 2B: UI/UX Derivation (P1) ✅ KÉSZ
 
 **Cél:** Frontend/UI dokumentáció deriválás külön skill chain-nel
 
@@ -265,6 +267,7 @@ Week 2:
 | Traceability link | **Business Rules** | BR a híd backend és frontend között |
 | Cross-cutting | **Pattern library** | Egyszer deriválva, többször hivatkozva |
 | Skill architecture | **Külön chain** | `/loom-ui derive` |
+| Skills vs Commands | **Commands** | Explicit invocation (`/loom-ui`) |
 
 ### UI Derivation Levels
 
@@ -293,13 +296,36 @@ L3-UI: E2E Tests + Visual Regression + Manual QA Checklists
 
 ### Implementációs Fázisok
 
-| Fázis | Leírás | Prioritás |
-|-------|--------|-----------|
-| 2B.1 | Cross-cutting patterns template | Magas |
-| 2B.2 | `/loom-ui derive --level L1` skill | Magas |
-| 2B.3 | `/loom-ui derive --level L2` skill | Közepes |
-| 2B.4 | `/loom-ui derive --level L3` skill | Közepes |
-| 2B.5 | `/loom-ui validate` skill | Alacsony |
+| Fázis | Leírás | Státusz |
+|-------|--------|---------|
+| 2B.1 | Cross-cutting patterns template | ✅ KÉSZ |
+| 2B.2 | `/loom-ui derive --level L1` command | ✅ KÉSZ |
+| 2B.3 | `/loom-ui derive --level L2` command | ✅ KÉSZ |
+| 2B.4 | `/loom-ui derive --level L3` command | ✅ KÉSZ |
+| 2B.5 | `/loom-ui validate` command | ✅ KÉSZ |
+| 2B.6 | Commands restructure (skills/ → commands/) | ✅ KÉSZ |
+
+### Teszt Eredmények (Flux Scheduling UI)
+
+| Metrika | Eredmény |
+|---------|----------|
+| `/loom-ui validate` | 4 check, 100% format/consistency pass |
+| `/loom-ui derive --level L3` | 4 fájl generálva (2,575 sor) |
+| `/loom-ui patterns` | 14 pattern, component mapping |
+| Test coverage | 52% → 100% (L3-UI generálás után) |
+| SI kérdések (L3) | 4 (Playwright, Chromatic, Critical paths, Desktop) |
+
+### Generált Fájlok
+
+```
+tmp/ux-ui/specifications/
+├── ui-patterns.md           # 714 sor - Cross-cutting patterns
+└── tests/
+    ├── e2e-tests.md         # 923 sor - 15 Playwright specs
+    ├── visual-tests.md      # 782 sor - 50+ Storybook stories
+    ├── manual-qa.md         # 451 sor - 7 critical path checklists
+    └── accessibility-audit.md # 419 sor - WCAG 2.1 AA audit
+```
 
 ### Referencia Projekt
 
@@ -493,24 +519,33 @@ Mielőtt elkezdjük, a következő döntések kellenek:
 
 **Phase 1 KÉSZ!** ✅ Booking System PoC sikeresen validálta a Loom működését új domainen.
 
-**Phase 2 nagyrészt KÉSZ:**
+**Phase 2 KÉSZ:**
 - ✅ 2.1 Skill Egységesítés - `/loom` dispatcher pattern
 - ✅ 2.2 Validation Skill - 4 check típus (traceability, format, coverage, consistency)
 - ✅ 2.3 Self-Learning System - RAG multi-source, SI decision reuse
-- ⬜ 2.4 Error Handling Improvement - TODO
+- ⬜ 2.4 Error Handling Improvement - TODO (alacsony prioritás)
 
-**Phase 2B TERVEZVE:**
-- ⬜ 2B.1 Cross-cutting patterns template
-- ⬜ 2B.2 `/loom-ui derive --level L1` skill
-- ⬜ 2B.3-5 További UI skill-ek
+**Phase 2B KÉSZ:**
+- ✅ 2B.1 Cross-cutting patterns template (`/loom-ui patterns`)
+- ✅ 2B.2 `/loom-ui derive --level L1` command
+- ✅ 2B.3 `/loom-ui derive --level L2` command
+- ✅ 2B.4 `/loom-ui derive --level L3` command
+- ✅ 2B.5 `/loom-ui validate` command
+- ✅ 2B.6 Commands restructure (skills/ → commands/)
+
+**Teszt validáció:**
+- ✅ `/loom-ui validate` - 4 check típus működik
+- ✅ `/loom-ui derive --level L3` - 2,575 sor teszt generálva
+- ✅ `/loom-ui patterns` - 14 pattern, component mapping
+- ✅ Test coverage 52% → 100%
 
 **Választási lehetőségek:**
 
 | Opció | Leírás |
 |-------|--------|
-| A | **Phase 2.4** - Error Handling Improvement befejezése |
-| B | **Phase 2B** - UI/UX Derivation skill chain kezdése |
-| C | **Phase 3** - Multi-Developer Test indítása |
-| D | **Integration Test** - Skills + RAG Self-Learning együttes tesztelése |
+| A | **Phase 3** - Multi-Developer Test indítása |
+| B | **Code Generation Test** - AI kódgenerálás a specifikációkból |
+| C | **Full-Stack Integration** - Backend + UI specs együtt tesztelése |
+| D | **Tool Integration** - SonarQube, Storybook, CI/CD integráció |
 
-**Ajánlás:** B opció - A UI derivation skill chain alapozza meg a full-stack dokumentáció deriválást. A valós UX-UI referencia projekt elemzése alapján tiszta architektúrával rendelkezünk.
+**Ajánlás:** B opció (Code Generation) vagy C opció (Full-Stack) - A specifikációk készek, ideje tesztelni, hogy az AI tud-e működő kódot generálni belőlük.
