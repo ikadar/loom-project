@@ -183,10 +183,42 @@ sentence-transformers  # HuggingFace embeddings (ingyenes, lokális)
 ## Következő Lépések (PoC Sikeres!)
 
 1. ✅ ~~RAG PoC validálás~~ - Kész
-2. 🔲 Tooling repository létrehozása (`loom-tooling`)
-3. 🔲 RAG engine migrálása tooling repo-ba
-4. 🔲 Claude Code + RAG integráció (retrieval script)
-5. 🔲 MCP Server fejlesztés (v2)
+2. ✅ ~~Tooling repository létrehozása (`loom-tooling`)~~ - Kész
+3. ✅ ~~RAG engine migrálása tooling repo-ba~~ - Kész (`loom-tooling/rag/`)
+4. ✅ ~~Claude Code + RAG integráció~~ - Kész (MCP server)
+5. ✅ ~~MCP Server fejlesztés~~ - Kész (2025-12-22)
+
+## MCP Server Implementáció (2025-12-22) ✅
+
+**Lokáció:** `loom-tooling/mcp/server.py`
+
+**Tools:**
+| Tool | Purpose |
+|------|---------|
+| `rag_initialize` | Load guidelines + project context |
+| `rag_retrieve` | Get relevant chunks (priority-based) |
+| `rag_get_decisions` | Check if decision exists |
+| `rag_index` | Add new content to knowledge base |
+
+**Konfiguráció:** `.mcp.json` a projekt gyökerében
+```json
+{
+  "mcpServers": {
+    "loom-rag": {
+      "command": "/path/to/loom-tooling/.venv/bin/python",
+      "args": ["mcp/server.py"],
+      "cwd": "/path/to/loom-tooling"
+    }
+  }
+}
+```
+
+**L0→L1 Deriválás Eredmények:**
+- Input: 195 sor (project-brief.md + quick-stories.md)
+- Interview: 12 round, 48 döntés
+- Output: 29 AC + 28 BR (1139 sor)
+- decisions.md: 48 perzisztált válasz
+- Quality: 85/100
 
 ## Tanulságok
 

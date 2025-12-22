@@ -1,10 +1,10 @@
 ---
 title: "Loom Next Steps Roadmap"
 status: "active"
-version: "1.4.0"
+version: "1.5.0"
 created: "2025-12-21"
-last_updated: "2025-12-21"
-context: "Phase 2B (UI) complete, commands restructure done"
+last_updated: "2025-12-22"
+context: "Phase 2C (MCP + decisions.md) complete, L0→L1 POC validated"
 current_score: "9.2/10 (Opus v03)"
 ---
 
@@ -27,6 +27,7 @@ current_score: "9.2/10 (Opus v03)"
 | **Phase 2.3: Self-Learning System** | ✅ **Kész** | RAG multi-source, SI decision reuse |
 | **Phase 2B: UI/UX Skill Chain** | ✅ **Kész** | `/loom-ui` 6 command, 21 SI kérdés |
 | **Commands Restructure** | ✅ **Kész** | skills/ → commands/ (explicit invocation) |
+| **Phase 2C: MCP + Persistence** | ✅ **Kész** | MCP server, decisions.md, L0→L1 POC |
 
 ### Phase 1 Eredmények
 
@@ -336,6 +337,145 @@ A döntések egy valós UX-UI dokumentáció elemzésén alapulnak:
 
 ---
 
+## Phase 2C: MCP Integration + Decision Persistence ✅ KÉSZ
+
+**Cél:** RAG integráció Claude Code-ba MCP szerveren keresztül, SI válaszok perzisztálása
+
+**Státusz: SIKERESEN TELJESÍTVE** (2025-12-22)
+
+### 2C.1 MCP Server Implementation ✅
+
+```
+loom-tooling/
+├── mcp/
+│   ├── server.py        # MCP server (FastMCP)
+│   └── README.md        # Dokumentáció
+├── rag/
+│   └── rag_engine.py    # LoomRAG engine (ChromaDB + HuggingFace)
+└── .venv/               # Python 3.11.9 (pyenv)
+```
+
+**MCP Tools:**
+| Tool | Purpose |
+|------|---------|
+| `rag_initialize` | Load guidelines + project context |
+| `rag_retrieve` | Get relevant chunks (priority-based) |
+| `rag_get_decisions` | Check if decision exists |
+| `rag_index` | Add new content to knowledge base |
+
+### 2C.2 decisions.md Persistence ✅
+
+**Probléma:** SI válaszok elvesztek session-ök között
+
+**Megoldás:** `decisions.md` fájl az input mellé
+- Perzisztálja az összes SI választ
+- Következő futtatáskor betölti → nem kérdezi újra
+- RAG-ba is indexelve → kontextusként használható
+
+**Formátum:**
+```markdown
+## Entity Decisions
+### Station
+- **AMB-ENT-001: Deletion behavior**
+  - Q: What happens to tasks when station deleted?
+  - A: Block deletion if tasks exist
+  - Decided: 2025-12-22 by user
+```
+
+### 2C.3 L0→L1 Derivation POC ✅
+
+**Input:** Flux Scheduling System (project-brief.md + quick-stories.md)
+
+**Eredmények:**
+| Metrika | Érték |
+|---------|-------|
+| Input | 195 sor (2 fájl) |
+| Interview rounds | 12 |
+| Decisions made | 48 |
+| Output: Acceptance Criteria | 29 AC (582 sor) |
+| Output: Business Rules | 28 BR (557 sor) |
+| Expansion ratio | ~6x |
+| Quality score | 85/100 |
+
+**Generált fájlok:**
+```
+tmp/poc-code-gen/
+├── input/
+│   ├── project-brief.md
+│   ├── quick-stories.md
+│   └── decisions.md       # 48 SI válasz
+└── output/L1/
+    ├── acceptance-criteria.md
+    └── business-rules.md
+```
+
+### 2C.4 RAG as 5th Pillar ✅
+
+RAG hivatalosan a Loom 5. pillére lett:
+
+| Pillar | Purpose |
+|--------|---------|
+| 1. Documentation Derivation | AI derives 80-95% |
+| 2. TDAI | Tests constrain AI |
+| 3. Bidirectional Traceability | Everything linked |
+| 4. Structured Interview | AI asks before deciding |
+| **5. Knowledge-Enhanced (RAG)** | Context-aware, consistent outputs |
+
+---
+
+## Phase 2D: Smart Ambiguity Discovery (PLANNED)
+
+**Cél:** Intelligensebb ambiguity felismerés és iteratív discovery
+
+### 2D.1 Output Refinement Pass
+
+**Probléma:** Jelenleg csak az INPUT-ot elemezzük ambiguity-kért
+
+**Megoldás:** Az OUTPUT-ot is elemezni:
+```
+Generated AC + BR → Self-analysis → New ambiguities
+
+Példa:
+- AC-SCHEDULE-002 mentions "push tiles down"
+- Self-analysis: "What if station capacity > 1?"
+- → New ambiguity discovered from output!
+```
+
+**Implementáció:**
+- Phase 5.5: Output review pass
+- Checklist for cross-referencing ACs and BRs
+- Gap detection between rules
+
+### 2D.2 Iterative Discovery
+
+**Probléma:** Egy válasz néha új kérdéseket implikál
+
+**Megoldás:** Follow-up kérdések automatikus generálása:
+```
+Q: "What are the paper_status values?"
+A: "in_stock / to_order / ordered"
+
+→ Generated follow-up:
+Q: "What triggers transition from to_order to ordered?"
+Q: "Can status go backwards (ordered → to_order)?"
+Q: "Who is authorized to change paper_status?"
+```
+
+**Implementáció:**
+- SI engine extension: follow-up generator
+- State machine detection from enum answers
+- Transition/authorization questions
+
+### 2D.3 Success Criteria
+
+| Kritérium | Cél |
+|-----------|-----|
+| Output refinement finds new ambiguities | ≥5 per derivation |
+| Follow-up questions relevant | ≥80% |
+| Reduced manual review needed | -30% |
+
+---
+
 ## Phase 3: Multi-Developer Test (P1)
 
 **Cél:** Bizonyítani, hogy Loom működik csapatban
@@ -533,19 +673,30 @@ Mielőtt elkezdjük, a következő döntések kellenek:
 - ✅ 2B.5 `/loom-ui validate` command
 - ✅ 2B.6 Commands restructure (skills/ → commands/)
 
+**Phase 2C KÉSZ:** (2025-12-22)
+- ✅ 2C.1 MCP Server - `loom-rag` server with 4 tools
+- ✅ 2C.2 decisions.md - SI válaszok perzisztálása
+- ✅ 2C.3 L0→L1 POC - 48 döntés, 29 AC, 28 BR (85/100 quality)
+- ✅ 2C.4 RAG as 5th Pillar - Hivatalosan a Loom architektúra része
+
+**Phase 2D TERVEZETT:**
+- ⬜ 2D.1 Output Refinement Pass - AC+BR self-analysis
+- ⬜ 2D.2 Iterative Discovery - Follow-up kérdések generálása
+
 **Teszt validáció:**
 - ✅ `/loom-ui validate` - 4 check típus működik
 - ✅ `/loom-ui derive --level L3` - 2,575 sor teszt generálva
 - ✅ `/loom-ui patterns` - 14 pattern, component mapping
-- ✅ Test coverage 52% → 100%
+- ✅ `/loom-derive` - 48 SI döntés, 6x expansion ratio
+- ✅ decisions.md persistence - Újrafuttatáskor 0 kérdés
 
 **Választási lehetőségek:**
 
 | Opció | Leírás |
 |-------|--------|
-| A | **Phase 3** - Multi-Developer Test indítása |
-| B | **Code Generation Test** - AI kódgenerálás a specifikációkból |
-| C | **Full-Stack Integration** - Backend + UI specs együtt tesztelése |
-| D | **Tool Integration** - SonarQube, Storybook, CI/CD integráció |
+| A | **Phase 2D** - Smart Ambiguity Discovery (output refinement, iterative discovery) |
+| B | **Phase 3** - Multi-Developer Test indítása |
+| C | **Code Generation Test** - AI kódgenerálás a specifikációkból |
+| D | **Full-Stack Integration** - Backend + UI specs együtt tesztelése |
 
-**Ajánlás:** B opció (Code Generation) vagy C opció (Full-Stack) - A specifikációk készek, ideje tesztelni, hogy az AI tud-e működő kódot generálni belőlük.
+**Ajánlás:** A opció (Phase 2D) - Az output refinement és iterative discovery jelentősen javítaná a deriválás minőségét, és C opció (Code Gen) - Tesztelni, hogy az AI tud-e működő kódot generálni a specifikációkból.
