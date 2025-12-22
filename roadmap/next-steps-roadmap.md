@@ -476,6 +476,137 @@ Q: "Who is authorized to change paper_status?"
 
 ---
 
+## Phase 2E: Security Integration (PLANNED)
+
+**Cél:** Security validation beépítése a deriválási folyamatba
+
+**Probléma:** Az AI-DOP jelenlegi security pontszáma csak **4/10** a piackutatás szerint. Ez a legnagyobb gap.
+
+**Forrás:** 2024 DORA report, Sonar, Snyk, Stanford tanulmányok - AI generált kód security sebezhetőségei
+
+### 2E.1 SAST Integration
+
+**Probléma:** AI továbbra is generálhat insecure kódot
+
+**Megoldás:** Static Application Security Testing integráció
+```
+Generated Code → SAST Scan → Security Report → Fix Suggestions
+```
+
+**Tools:**
+| Tool | Purpose | Integration |
+|------|---------|-------------|
+| SonarQube | Code quality + security | CI/CD hook |
+| Semgrep | Pattern-based security | Pre-commit hook |
+| Snyk Code | Vulnerability detection | IDE + CLI |
+| CodeQL | Deep semantic analysis | GitHub integration |
+
+### 2E.2 OWASP Security Checklist
+
+**Probléma:** Security requirements nem explicit a deriválásban
+
+**Megoldás:** OWASP Top 10 checklist beépítése L1 deriválásba
+```
+L0 Input → Security Checklist Analysis → Security Requirements (SR-*)
+```
+
+**Új dokumentum típus:**
+```markdown
+### SR-AUTH-001 – Authentication Security
+
+**OWASP Reference:** A07:2021 - Identification and Authentication Failures
+
+**Requirements:**
+- Password minimum 12 characters
+- Rate limiting on login attempts
+- Session timeout after inactivity
+
+**Derived from:** US-USER-001 (user registration)
+**Traceability:** AC-USER-001-3, BR-AUTH-001
+```
+
+### 2E.3 Security-Focused Test Generation
+
+**Probléma:** TDAI nem generál security-specifikus teszteket
+
+**Megoldás:** Security test category hozzáadása L3 deriváláshoz
+```markdown
+### TC-SEC-001 – SQL Injection Prevention
+
+**Type:** Security (OWASP A03:2021)
+**Given** malicious SQL input in search field
+**When** search is executed
+**Then** input is sanitized, no SQL execution
+
+**Attack Vector:** `'; DROP TABLE users; --`
+**Expected:** Escaped/rejected, no database modification
+```
+
+**Security test kategóriák:**
+- Injection attacks (SQL, XSS, Command)
+- Authentication bypass
+- Authorization violations
+- Data exposure
+- Session management
+
+### 2E.4 Dependency Scanning
+
+**Probléma:** AI generált kód használhat vulnerable dependencies-t
+
+**Megoldás:** Dependency audit a deriválási folyamatban
+```
+Generated Code → Extract Dependencies → Vulnerability DB Check → Report
+```
+
+**Tools:**
+| Tool | Purpose |
+|------|---------|
+| npm audit / yarn audit | JS dependencies |
+| pip-audit | Python dependencies |
+| OWASP Dependency-Check | Multi-language |
+| Snyk | License + vulnerability |
+
+### 2E.5 Security Governance
+
+**Probléma:** Nincs security oversight az AI kód használatban
+
+**Megoldás:** Security audit trail + governance
+```yaml
+# .loom/security-governance.yaml
+security-review:
+  required-for:
+    - authentication/*
+    - payment/*
+    - data-export/*
+
+  reviewers:
+    - security-team
+
+  scan-on:
+    - pre-commit
+    - pre-deploy
+
+  compliance:
+    - OWASP-Top-10
+    - GDPR (if data processing)
+    - PCI-DSS (if payment)
+```
+
+### 2E.6 Success Criteria
+
+| Kritérium | Jelenlegi | Cél |
+|-----------|-----------|-----|
+| Security validation score | 4/10 | 8/10 |
+| SAST integration | ❌ | ✅ |
+| Security requirements derived | ❌ | ✅ |
+| Security tests generated | ❌ | ✅ |
+| Dependency scanning | ❌ | ✅ |
+| Security audit trail | ❌ | ✅ |
+
+**Impact:** Security score 4/10 → 8/10, összesített AI-DOP score 7.6/10 → **8.4/10**
+
+---
+
 ## Phase 3: Multi-Developer Test (P1)
 
 **Cél:** Bizonyítani, hogy Loom működik csapatban
@@ -683,6 +814,13 @@ Mielőtt elkezdjük, a következő döntések kellenek:
 - ⬜ 2D.1 Output Refinement Pass - AC+BR self-analysis
 - ⬜ 2D.2 Iterative Discovery - Follow-up kérdések generálása
 
+**Phase 2E TERVEZETT:** (Security Integration)
+- ⬜ 2E.1 SAST Integration - SonarQube, Semgrep, Snyk
+- ⬜ 2E.2 OWASP Security Checklist - Security requirements deriválás
+- ⬜ 2E.3 Security Test Generation - TDAI + security tesztek
+- ⬜ 2E.4 Dependency Scanning - Vulnerability detection
+- ⬜ 2E.5 Security Governance - Audit trail + compliance
+
 **Teszt validáció:**
 - ✅ `/loom-ui validate` - 4 check típus működik
 - ✅ `/loom-ui derive --level L3` - 2,575 sor teszt generálva
@@ -695,8 +833,8 @@ Mielőtt elkezdjük, a következő döntések kellenek:
 | Opció | Leírás |
 |-------|--------|
 | A | **Phase 2D** - Smart Ambiguity Discovery (output refinement, iterative discovery) |
-| B | **Phase 3** - Multi-Developer Test indítása |
-| C | **Code Generation Test** - AI kódgenerálás a specifikációkból |
-| D | **Full-Stack Integration** - Backend + UI specs együtt tesztelése |
+| B | **Phase 2E** - Security Integration (SAST, OWASP, security tests) |
+| C | **Phase 3** - Multi-Developer Test indítása |
+| D | **Code Generation Test** - AI kódgenerálás a specifikációkból |
 
-**Ajánlás:** A opció (Phase 2D) - Az output refinement és iterative discovery jelentősen javítaná a deriválás minőségét, és C opció (Code Gen) - Tesztelni, hogy az AI tud-e működő kódot generálni a specifikációkból.
+**Ajánlás:** B opció (Phase 2E) - A security a legnagyobb gap (4/10), ezt javítani kritikus. Utána A opció (Phase 2D) és D opció (Code Gen).
