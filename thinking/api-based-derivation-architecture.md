@@ -3,6 +3,8 @@
 > Dokumentum a Claude Code command-alapú megközelítésről való átállásról API-alapú architektúrára.
 
 **Létrehozva:** 2025-12-23
+**Frissítve:** 2025-12-23
+**Döntés:** Local CLI + Remote API (IP védelem + file access)
 
 ---
 
@@ -56,6 +58,67 @@ A Claude Code command **jó volt PoC-nak** - gyorsan validáltuk a koncepciót.
 - Tesztelhető, monitorozható
 
 A RAG (MCP) nem nagy veszteség - ugyanaz a Python kód, csak közvetlenül hívod, nem MCP-n keresztül.
+
+---
+
+## Deployment Model: Local CLI + Remote API
+
+### A Probléma
+
+Két ellentétes követelmény:
+1. **File access** - A CLI-nek hozzá kell férnie a lokális fájlokhoz (code, L0, ADRs)
+2. **IP védelem** - A promptok (secret sauce) nem lehetnek a user gépén
+
+### Megoldás: Hybrid Architektúra
+
+```
+┌─────────────────────────────────────────────────────┐
+│                  User's Machine                      │
+│  ┌─────────────────────────────────────────────────┐│
+│  │         Loom CLI (open source)                  ││
+│  │                                                 ││
+│  │  ✅ Reads local files (code, L0, ADRs)          ││
+│  │  ✅ Builds context locally                      ││
+│  │  ✅ RAG retrieval (local Chroma)                ││
+│  │  ✅ Writes output locally                       ││
+│  │  ❌ NEM tartalmazza a promptokat                ││
+│  └──────────────────┬──────────────────────────────┘│
+└─────────────────────┼───────────────────────────────┘
+                      │ HTTPS
+                      │ {context, task, user_api_key}
+                      ▼
+         ┌────────────────────────────────────────────┐
+         │         AI-DOP API (protected)             │
+         │                                            │
+         │  🔒 Secret prompts (IP protected)          │
+         │  🔒 Orchestration logic                    │
+         │                                            │
+         │  prompt + context → Claude API             │
+         │                     (user's key = BYOK)    │
+         └────────────────────────────────────────────┘
+                      │
+                      ▼ {result}
+              Back to local CLI → write files
+```
+
+### Miért ez a legjobb?
+
+| Szempont | Eredmény |
+|----------|----------|
+| **File access** | ✅ Lokális CLI olvas mindent |
+| **Codebase privacy** | ✅ Csak context megy, nem teljes repo |
+| **IP védelem** | ✅ Promptok a szerveren maradnak |
+| **BYOK** | ✅ User API key-jével hívunk Claude-ot |
+| **Cost (user)** | Claude API költség (BYOK) |
+| **Cost (AI-DOP)** | Csak szerver infra (nincs LLM költség) |
+
+### Elvetett Alternatívák
+
+| Model | Probléma |
+|-------|----------|
+| **Fully Local** | ❌ IP nem védhető (promptok lokálisan) |
+| **Full SaaS** | ❌ Nincs file access (upload kéne) |
+| **Git Integration** | ❌ Private repo hozzáférés, security concerns |
 
 ---
 

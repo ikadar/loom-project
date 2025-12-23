@@ -3,7 +3,8 @@
 > Dokumentum az API-alapú architektúra fizetési modelljeiről.
 
 **Létrehozva:** 2025-12-23
-**Döntés:** BYOK (Bring Your Own Key) az első verzióban
+**Frissítve:** 2025-12-23
+**Döntés:** Local CLI + Remote API + BYOK
 
 ---
 
@@ -123,17 +124,44 @@ loom derive --cloud
 
 ## Döntés
 
-**Első verzió: BYOK (Model 1)**
+**Választott modell: Local CLI + Remote API + BYOK**
 
-Indoklás:
-- Legegyszerűbb implementálni
-- Nincs billing/payment integráció
-- Open source friendly
-- Technical users (early adopters) OK vele
+```
+┌─────────────────────────────────────────────────────┐
+│                  User's Machine                      │
+│  ┌─────────────────────────────────────────────────┐│
+│  │         Loom CLI (open source)                  ││
+│  │  - File access (local)                          ││
+│  │  - Context building                             ││
+│  │  - RAG (local Chroma)                           ││
+│  └──────────────────┬──────────────────────────────┘│
+└─────────────────────┼───────────────────────────────┘
+                      │ {context, user_api_key}
+                      ▼
+         ┌────────────────────────────────────────────┐
+         │         AI-DOP API (protected)             │
+         │  🔒 Secret prompts (IP védett)             │
+         │  → Claude API (user's key = BYOK)          │
+         └────────────────────────────────────────────┘
+```
 
-**Későbbi verzió: Hybrid (Model 4)**
-- Cloud option non-technical users-nek
-- Revenue stream ha van traction
+**Indoklás:**
+
+| Követelmény | Megoldás |
+|-------------|----------|
+| File access | ✅ Local CLI |
+| IP védelem | ✅ Promptok szerveren |
+| Nincs billing | ✅ BYOK (user fizeti Claude-ot) |
+| Privacy | ✅ Csak context megy, nem teljes repo |
+
+**Költségek:**
+
+| Ki fizet | Mit |
+|----------|-----|
+| **User** | Claude API (BYOK) |
+| **AI-DOP** | Szerver infra only (nincs LLM cost) |
+
+**Későbbi opció:** SaaS tier non-technical users-nek (subscription + AI-DOP pays Claude)
 
 ---
 
