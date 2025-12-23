@@ -119,6 +119,27 @@ Két ellentétes követelmény:
 | **Fully Local** | ❌ IP nem védhető (promptok lokálisan) |
 | **Full SaaS** | ❌ Nincs file access (upload kéne) |
 | **Git Integration** | ❌ Private repo hozzáférés, security concerns |
+| **Agent SDK** | ❌ Lokálisan fut, promptok láthatók (nincs IP védelem) |
+
+### API Key: BYOK vs SaaS
+
+**Nulla architektúrális különbség** - csak az API key forrása más:
+
+```python
+def get_api_key(user, payment_model):
+    if payment_model == "byok":
+        return user.api_key          # User fizeti a Claude API-t
+    else:  # saas
+        track_usage(user)
+        return os.environ["AIDOP_KEY"]  # AI-DOP fizeti, user subscriptiont
+```
+
+| Modell | Ki fizeti Claude-ot | Architektúra változás |
+|--------|---------------------|----------------------|
+| **BYOK** | User | - |
+| **SaaS** | AI-DOP | Nincs (csak billing logic) |
+
+**Következmény:** BYOK-kal indulunk, SaaS-ra váltás később = csak config változás.
 
 ---
 

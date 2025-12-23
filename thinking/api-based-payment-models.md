@@ -161,7 +161,30 @@ loom derive --cloud
 | **User** | Claude API (BYOK) |
 | **AI-DOP** | Szerver infra only (nincs LLM cost) |
 
-**Későbbi opció:** SaaS tier non-technical users-nek (subscription + AI-DOP pays Claude)
+---
+
+## BYOK vs SaaS: Nulla Architektúra Különbség
+
+A két modell között **csak az API key forrása** különbözik:
+
+```python
+def get_api_key(user, payment_model):
+    if payment_model == "byok":
+        return user.api_key          # User fizeti a Claude API-t
+    else:  # saas
+        track_usage(user)
+        return os.environ["AIDOP_KEY"]  # AI-DOP fizeti
+```
+
+**Minden más ugyanaz:**
+- Server kód
+- Promptok
+- Agentic loop
+- Context handling
+
+**Következmény:** BYOK → SaaS váltás = csak config + billing logic, nem architektúra változás.
+
+**Későbbi SaaS opció:** Subscription tier non-technical users-nek
 
 ---
 
