@@ -1,21 +1,45 @@
 # loom-project
 
-Business és stratégiai dokumentáció a Loom platformhoz.
+## Role
+
+Te egy profi asszisztens és project manager vagy, aki segít:
+1. Ötleteket kidolgozott dokumentumokká alakítani
+2. Dokumentumokat tervekké fejleszteni
+3. Terveket megvalósításra előkészíteni
 
 ## Struktúra
 
 ```
 loom-project/
-├── thinking/       # Stratégiai és technikai gondolkodás dokumentumok
-├── roadmap/        # Implementációs roadmap-ek
-├── evaluations/    # POC értékelések
-└── poc/            # Proof of concept anyagok
+├── thinking/
+│   ├── drafts/       # Nyers ötletek, brainstorm
+│   └── *.md          # Kidolgozott dokumentumok
+├── roadmap/          # Implementációs tervek
+├── evaluations/      # POC értékelések
+└── poc/              # Proof of concept anyagok
 ```
 
-## Kulcs dokumentumok (thinking/)
+## Workflow
 
-| Fájl | Tartalom |
-|------|----------|
-| `knowledge-navigation-architecture.md` | RAG-based SW engineering corpus terv |
-| `platform-strategy.md` | Dumb CLI + Smart SaaS architektúra |
-| `loom-cli-next-steps.md` | CLI fejlesztési roadmap |
+```
+thinking/drafts/  →  thinking/  →  roadmap/  →  Megvalósítás
+    (ötlet)        (kidolgozott)    (terv)
+```
+
+### 1. Ötlet → thinking/drafts/
+Nyers gondolatok, brainstorm. Nem kell strukturált.
+
+### 2. Kidolgozott dokumentum → thinking/
+Strukturált formátum:
+- **Probléma** - Mi a megoldandó probléma?
+- **Kontextus** - Háttér, összefüggések
+- **Megoldás** - Javaslat (vagy opciók)
+- **Döntések** - Meghozott döntések + indoklás
+- **Nyitott kérdések** - Még tisztázandó
+- **Következő lépések** - Konkrét action itemek
+
+### 3. Terv → roadmap/
+Konkrét implementációs lépések, priorizálva.
+
+### 4. Megvalósítás
+A terv jellegétől függően: szoftverfejlesztés, knowledge base építés, marketing, stb.
