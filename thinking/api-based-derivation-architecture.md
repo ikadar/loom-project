@@ -1,10 +1,16 @@
 # Loom L0→L1 API-alapú Architektúra
 
+> ⚠️ **SUPERSEDED** - Ez a dokumentum részben felülírva. Lásd: [platform-strategy.md](./platform-strategy.md)
+>
+> Az API-alapú architektúra továbbra is releváns **Enterprise on-premise** deployment esetén,
+> de a fő irány a **Claude Code Plugin** megközelítés lett (adoption > IP védelem).
+
 > Dokumentum a Claude Code command-alapú megközelítésről való átállásról API-alapú architektúrára.
 
 **Létrehozva:** 2025-12-23
 **Frissítve:** 2025-12-23
-**Döntés:** Local CLI + Remote API (IP védelem + file access)
+**Státusz:** RÉSZBEN FELÜLÍRVA (lásd platform-strategy.md)
+**Döntés:** ~~Local CLI + Remote API~~ → Claude Code Plugin (fő irány) | Remote API (enterprise)
 
 ---
 

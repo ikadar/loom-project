@@ -1,12 +1,28 @@
 # AI-DOP IDE Integration Strategy
 
+> ⚠️ **SUPERSEDED** - Ez a dokumentum részben felülírva. Lásd: [platform-strategy.md](./platform-strategy.md)
+>
+> A fő irány most: **Claude Code Plugin** (nem Remote API).
+> A VS Code Extension és CLI továbbra is releváns lehet későbbi fázisban.
+
 > Dokumentum a különböző IDE-kkel (Claude Code, Cursor, Windsurf, VS Code) való integrációról.
 
 **Létrehozva:** 2025-12-23
+**Státusz:** RÉSZBEN FELÜLÍRVA (lásd platform-strategy.md)
 
 ---
 
-## Alapelv
+## Új Prioritás (2025-12-23)
+
+| Prioritás | Integráció | Státusz |
+|-----------|------------|---------|
+| **P0** | Claude Code Plugin | ✅ FŐ IRÁNY |
+| P1 | VS Code Extension | Későbbi fázis |
+| P2 | CLI (CI/CD) | Későbbi fázis |
+
+---
+
+## Korábbi Alapelv (archív)
 
 Az AI-DOP Remote API egyetlen backend, többféle frontend:
 

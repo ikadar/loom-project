@@ -1,14 +1,29 @@
 # API-alapú AI-DOP: Fizetési Modellek
 
+> ⚠️ **SUPERSEDED** - Ez a dokumentum részben felülírva. Lásd: [platform-strategy.md](./platform-strategy.md)
+>
+> A fő irány most: **Claude Code Plugin** (user subscription fedezi a költséget).
+> Az API-alapú modellek továbbra is relevánsak **Enterprise tier** esetén.
+
 > Dokumentum az API-alapú architektúra fizetési modelljeiről.
 
 **Létrehozva:** 2025-12-23
 **Frissítve:** 2025-12-23
-**Döntés:** Local CLI + Remote API + BYOK
+**Státusz:** RÉSZBEN FELÜLÍRVA (lásd platform-strategy.md)
+**Döntés:** ~~BYOK~~ → Claude Code Plugin (fő irány) | BYOK/SaaS (enterprise)
 
 ---
 
-## Kontextus
+## Új Irány (2025-12-23)
+
+| Tier | Fizetési modell | Ki fizeti az LLM-et? |
+|------|-----------------|---------------------|
+| **Free (Plugin)** | $0 | User (Claude subscription) |
+| **Enterprise** | Subscription | BYOK vagy SaaS (TBD) |
+
+---
+
+## Korábbi Kontextus (archív)
 
 Ha az AI-DOP a felhasználó lokális Claude Code-ját használja (command-alapú), akkor nincs külön költség - a user már fizeti a Claude subscription-t.
 
