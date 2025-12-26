@@ -186,10 +186,12 @@ After derivation, validate:
 
 ## 📖 Related Documentation
 
-### Core Concepts
-- `bidirectional-traceability-design.md` - How traceability works
-- `test-driven-ai-development.md` - TDAI methodology
-- `claude-code-as-platform.md` - Platform architecture
+### Core Concepts (5 Pillars)
+- `documentation-derivation-strategy.md` - L0→L3 Documentation Derivation (1st pillar)
+- `../core-concepts/test-driven-ai-development.md` - TDAI methodology (2nd pillar)
+- `../core-concepts/bidirectional-traceability-design.md` - Traceability (3rd pillar)
+- `../core-concepts/structured-interview-pattern.md` - Structured Interview (4th pillar)
+- `../core-concepts/knowledge-navigation-architecture.md` - Knowledge-Enhanced RAG (5th pillar)
 
 ### Evaluation
 - `sonnett-evaluation-02.md` - Comprehensive system evaluation
