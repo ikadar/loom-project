@@ -1,3 +1,10 @@
+---
+date: 2025-12-22
+poc-name: Code Generation Test
+status: incomplete
+domain: Flux Print Shop Scheduling
+---
+
 # POC: Code Generation Test
 
 ## Cél

@@ -1,10 +1,11 @@
 ---
 date: 2025-12-19
+updated: 2025-12-26
 author: Claude Sonnet 4.5 + Human collaboration
-version: 1.0
+version: 1.1
 status: draft
-purpose: Bidirectional traceability system design for AI-PDS
-related: sonnett-evaluation-01.md, sonnett-evaluation-01-addendum.md, poc-tooling-design.md
+purpose: Bidirectional traceability system design for Loom
+related: sonnett-evaluation-01.md, sonnett-evaluation-01-addendum.md
 ---
 
 # Kétirányú Traceability - A Dokumentáció-Kód Szinkronizáció Megoldása
@@ -417,7 +418,7 @@ class TraceabilityParser {
 **Example usage:**
 
 ```bash
-ai-pds trace parse
+loom trace parse
 
 Output:
 Found 145 traceability links:
@@ -452,7 +453,7 @@ class TraceabilityValidator {
 **Example usage:**
 
 ```bash
-ai-pds trace validate
+loom trace validate
 
 Output:
 Validating traceability...
@@ -479,7 +480,7 @@ Summary: 3 errors, 13 warnings
 **Purpose:** Visualize traceability links.
 
 ```bash
-ai-pds trace graph --output trace-graph.html
+loom trace graph --output trace-graph.html
 ```
 
 **Output (interactive HTML):**
@@ -521,7 +522,7 @@ Legend:
 **Purpose:** AI automatically adds traceability annotations when generating code.
 
 ```bash
-ai-pds generate code --from-user-story US-001
+loom generate code --from-user-story US-001
 ```
 
 **Generated code automatically includes:**
@@ -533,7 +534,7 @@ ai-pds generate code --from-user-story US-001
  * @traceability US-001 (requirements/user-stories.md#us-001)
  * @implements AC-001-1, AC-001-2, AC-001-3
  * @domain-entity ENT-User (domain-modelling/domain-model.md#user-entity)
- * @generated-by AI-PDS v0.1.0
+ * @generated-by Loom v0.1.0
  * @generated-at 2024-12-19T10:30:00Z
  */
 export async function registerUser(email: string, password: string): Promise<User> {
@@ -546,7 +547,7 @@ export async function registerUser(email: string, password: string): Promise<Use
 **Purpose:** Update documentation based on code changes.
 
 ```bash
-ai-pds trace sync --direction code-to-docs
+loom trace sync --direction code-to-docs
 ```
 
 **Workflow:**
@@ -559,7 +560,7 @@ ai-pds trace sync --direction code-to-docs
 **Example:**
 
 ```bash
-ai-pds trace sync --direction code-to-docs
+loom trace sync --direction code-to-docs
 
 Detected changes:
   - src/auth/registration.ts: Modified function registerUser()
@@ -589,7 +590,7 @@ Approve update? [y/n]
 **Reverse sync (docs → code):**
 
 ```bash
-ai-pds trace sync --direction docs-to-code
+loom trace sync --direction docs-to-code
 ```
 
 ---
@@ -627,7 +628,7 @@ interface TraceabilityMetrics {
 ### Dashboard View
 
 ```bash
-ai-pds trace dashboard
+loom trace dashboard
 ```
 
 **Output:**
@@ -674,7 +675,7 @@ ai-pds trace dashboard
 
 ```bash
 # Human describes requirement
-ai-pds generate "Add password reset functionality"
+loom generate "Add password reset functionality"
 
 # AI generates docs with IDs
 # - US-015: Password reset user story
@@ -686,7 +687,7 @@ ai-pds generate "Add password reset functionality"
 
 ```bash
 # Generate code from requirement
-ai-pds generate code --from-user-story US-015
+loom generate code --from-user-story US-015
 
 # AI generates code with traceability annotations
 # src/auth/password-reset.ts:
@@ -700,7 +701,7 @@ ai-pds generate code --from-user-story US-015
 
 ```bash
 # Generate tests
-ai-pds generate tests --from-user-story US-015
+loom generate tests --from-user-story US-015
 
 # AI generates tests with traceability
 # tests/auth/password-reset.test.ts:
@@ -714,20 +715,20 @@ ai-pds generate tests --from-user-story US-015
 
 ```bash
 # Pre-commit hook
-ai-pds trace validate
+loom trace validate
 
 # CI/CD pipeline
-ai-pds trace validate --strict --fail-on-warnings
+loom trace validate --strict --fail-on-warnings
 ```
 
 **5. Periodic Sync:**
 
 ```bash
 # Weekly: check for drift
-ai-pds trace sync --check-only
+loom trace sync --check-only
 
 # If drift detected, sync
-ai-pds trace sync --direction code-to-docs --auto-approve-safe
+loom trace sync --direction code-to-docs --auto-approve-safe
 ```
 
 ### Git Integration
@@ -739,11 +740,11 @@ ai-pds trace sync --direction code-to-docs --auto-approve-safe
 # .git/hooks/pre-commit
 
 echo "Running traceability validation..."
-ai-pds trace validate --pre-commit
+loom trace validate --pre-commit
 
 if [ $? -ne 0 ]; then
   echo "❌ Traceability validation failed!"
-  echo "Run 'ai-pds trace validate' to see details"
+  echo "Run 'loom trace validate' to see details"
   exit 1
 fi
 
@@ -765,11 +766,11 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Validate traceability
-        run: ai-pds trace validate --strict
+        run: loom trace validate --strict
 
       - name: Check coverage
         run: |
-          COVERAGE=$(ai-pds trace metrics --json | jq '.implementationCoverage')
+          COVERAGE=$(loom trace metrics --json | jq '.implementationCoverage')
           if (( $(echo "$COVERAGE < 80" | bc -l) )); then
             echo "❌ Implementation coverage below 80%: $COVERAGE%"
             exit 1
@@ -801,7 +802,7 @@ jobs:
 ### Step 1: Generate Documentation
 
 ```bash
-ai-pds generate "Add task commenting feature. Users can add, edit, delete comments on tasks."
+loom generate "Add task commenting feature. Users can add, edit, delete comments on tasks."
 ```
 
 **Generated docs:**
@@ -848,7 +849,7 @@ Represents a user comment on a task.
 ### Step 2: Generate Code
 
 ```bash
-ai-pds generate code --from-user-story US-020
+loom generate code --from-user-story US-020
 ```
 
 **Generated code:**
@@ -956,7 +957,7 @@ export class CommentService {
 ### Step 3: Generate Tests
 
 ```bash
-ai-pds generate tests --from-user-story US-020
+loom generate tests --from-user-story US-020
 ```
 
 **Generated tests:**
@@ -1039,7 +1040,7 @@ As a user, I want to add comments to tasks, so that I can communicate with team 
 ### Step 5: Validate Traceability
 
 ```bash
-ai-pds trace validate
+loom trace validate
 ```
 
 **Output:**
@@ -1108,7 +1109,7 @@ async editComment(commentId: string, userId: string, newText: string): Promise<C
 **Run sync check:**
 
 ```bash
-ai-pds trace sync --check-only
+loom trace sync --check-only
 ```
 
 **Output:**
@@ -1168,7 +1169,7 @@ Code changes → AI detects drift → AI proposes doc update → Human approves 
 
 **Answer:**
 ```bash
-ai-pds trace impact --requirement US-020
+loom trace impact --requirement US-020
 
 Files affected by US-020:
   - src/domain/entities/Comment.ts
@@ -1187,7 +1188,7 @@ Functions affected:
 
 ```bash
 # Documentation changed: AC-020-2 text modified
-ai-pds trace test --requirement AC-020-2
+loom trace test --requirement AC-020-2
 
 Running tests for AC-020-2...
   ✓ should allow user to edit their own comment
@@ -1200,7 +1201,7 @@ Running tests for AC-020-2...
 
 **New developer:**
 ```bash
-ai-pds trace explain --code src/features/comments/comment-service.ts
+loom trace explain --code src/features/comments/comment-service.ts
 ```
 
 **Output:**
@@ -1234,7 +1235,7 @@ To understand this feature, read:
 For regulated industries (finance, healthcare):
 
 ```bash
-ai-pds trace audit --output audit-report.pdf
+loom trace audit --output audit-report.pdf
 ```
 
 **Report includes:**
@@ -1252,7 +1253,7 @@ ai-pds trace audit --output audit-report.pdf
 - [ ] Basic traceability annotation syntax
 - [ ] Parser for extracting traceability links
 - [ ] Existence check validator
-- [ ] Simple CLI: `ai-pds trace parse`, `ai-pds trace validate`
+- [ ] Simple CLI: `loom trace parse`, `loom trace validate`
 
 ### MVP Phase (v0.5)
 
@@ -1303,13 +1304,13 @@ ai-pds trace audit --output audit-report.pdf
 Without it:
 - Documentation drifts
 - Developers ignore docs
-- AI-PDS fails
+- Loom fails
 
 With it:
 - Documentation stays current (AI enforces it)
 - Developers trust docs (they're always accurate)
-- AI-PDS succeeds (reliable context for AI code generation)
+- Loom succeeds (reliable context for AI code generation)
 
-**This is not just "nice to have" — it's FUNDAMENTAL to the AI-PDS vision.**
+**This is not just "nice to have" — it's FUNDAMENTAL to the Loom vision.**
 
 Next step: Integrate traceability into the PoC tooling design.

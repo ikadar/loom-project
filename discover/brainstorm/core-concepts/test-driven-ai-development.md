@@ -1,10 +1,11 @@
 ---
 date: 2025-12-19
+updated: 2025-12-26
 author: Claude Sonnet 4.5 + Human collaboration
-version: 1.0
+version: 1.1
 status: draft
 purpose: Test-Driven AI Development - Mitigating AI hallucination through comprehensive test generation
-related: sonnett-evaluation-01.md, sonnett-evaluation-01-addendum.md, poc-tooling-design.md
+related: sonnett-evaluation-01.md, sonnett-evaluation-01-addendum.md
 ---
 
 # Test-Driven AI Development: A hallucináció problémájának megoldása
@@ -731,7 +732,7 @@ interface TestQualityMetrics {
 
 ---
 
-## 🚀 Integration into AI-PDS Workflow
+## 🚀 Integration into Loom Workflow
 
 ### Updated PoC Workflow with TDAI
 
@@ -769,19 +770,19 @@ interface TestQualityMetrics {
 
 ```bash
 # Generate tests from requirements
-ai-pds generate tests --from-user-story US-001
+loom generate tests --from-user-story US-001
 
 # Generate test plan (before generating tests)
-ai-pds generate test-plan --from-user-story US-001
+loom generate test-plan --from-user-story US-001
 
 # Run tests and report hallucinations
-ai-pds test --detect-hallucinations
+loom test --detect-hallucinations
 
 # Test quality metrics
-ai-pds test metrics
+loom test metrics
 
 # Generate code that passes tests
-ai-pds generate code --from-tests
+loom generate code --from-tests
 ```
 
 ---
@@ -956,7 +957,7 @@ Requirements → AI generates tests (constraints) → AI generates code (constra
 >
 > This is the hallucination antidote.
 
-**Integration with AI-PDS:**
+**Integration with Loom:**
 
 TDAI + Traceability + AI-generated docs = **Self-validating, self-documenting system**
 

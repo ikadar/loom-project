@@ -1,16 +1,26 @@
-# Loom CLI - Következő Fejlesztési Lépések
+---
+title: "Loom CLI Feature Backlog"
+status: backlog
+created: 2025-12-23
+updated: 2025-12-26
+note: "License/monetization a CLI-ből kikerült - lásd platform-business-model.md"
+---
 
-Létrehozva: 2025-12-23
+# Loom CLI Feature Backlog
 
-## Jelenlegi Állapot (v0.3.0)
+> Feature ötletek a CLI továbbfejlesztéséhez.
 
-A CLI jelenleg 4 parancsot támogat:
+**Megjegyzés:** A CLI ingyenes, a monetizáció a SaaS-ban történik. Lásd: `../business/platform-business-model.md`
+
+---
+
+## Historikus Kontextus (v0.3.0, 2025-12-23)
+
+A CLI ekkor 4 parancsot támogatott:
 - `analyze` - Phase 0-3: domain discovery, ambiguity detection
 - `interview` - Phase 4: iteratív structured interview
 - `derive` - Phase 5-6: AC + BR generálás
 - `help/version` - segédparancsok
-
-Az interview iteratív, CLI-kontrollált, támogatja a question skip logikát.
 
 ---
 
@@ -227,58 +237,3 @@ Csak a változott L0 fájlokat elemezze újra.
 
 ### 11.3 Caching
 Claude válaszok cache-elése azonos inputra.
-
----
-
-## 12. License & Monetization
-
-### 12.1 License Validation
-```go
-func validateLicense(key string) (*License, error) {
-    // Call license server
-    // Return tier: free/pro/team/enterprise
-}
-```
-
-### 12.2 Feature Gating
-```go
-if license.Tier == "free" && questionCount > 10 {
-    return errors.New("Free tier limited to 10 questions per interview")
-}
-```
-
-### 12.3 Usage Tracking
-```go
-func trackUsage(event UsageEvent) {
-    // Send to analytics (privacy-respecting)
-}
-```
-
----
-
-## Prioritás Sorrend
-
-| # | Feature | Effort | Impact | Priority |
-|---|---------|--------|--------|----------|
-| 1 | AI dependency detection | M | H | P1 |
-| 2 | Interview resume | S | H | P1 |
-| 3 | Question grouping | S | M | P2 |
-| 4 | Undo/Edit answers | M | M | P2 |
-| 5 | Batch mode improvements | S | M | P2 |
-| 6 | Progress export | S | L | P3 |
-| 7 | Answer validation | M | M | P3 |
-| 8 | Git integration | S | M | P3 |
-| 9 | License validation | M | H | P1 (monetization) |
-| 10 | Multi-language | L | M | P4 |
-
-S = Small (1-2 óra), M = Medium (3-5 óra), L = Large (1+ nap)
-
----
-
-## Következő Sprint Javaslat
-
-1. **AI dependency detection** - Legfontosabb a jó UX-hez
-2. **Interview resume** - Session persistence
-3. **License validation** - Monetization alapja
-
-Ezzel a CLI production-ready lenne beta teszteléshez.

@@ -23,11 +23,14 @@ A projekt a [Double Diamond](https://www.designcouncil.org.uk/our-resources/the-
 
 ```
 loom-project/
-├── discover/     # Kutatás, ötletek, POC-ok, értékelések
-│   └── drafts/   # Nyers ötletek, brainstorm
-├── define/       # Probléma definiálása, kidolgozott dokumentumok
-├── develop/      # Megoldások, tervek
-└── deliver/      # Megvalósítás követése, eredmények
+├── discover/        # Kutatás, ötletek, POC-ok, értékelések
+│   ├── brainstorm/  # Ötletek, még nem kidolgozott dokumentumok
+│   ├── drafts/      # Nyers ötletek, gyors jegyzetek
+│   ├── evaluations/ # AI kritikai értékelések
+│   └── poc-runs/    # POC futtatások eredményei
+├── define/          # Probléma definiálása, kidolgozott dokumentumok
+├── develop/         # Megoldások, tervek
+└── deliver/         # Megvalósítás követése, eredmények
 ```
 
 ## Workflow
@@ -35,7 +38,24 @@ loom-project/
 ### 1. Discover (diverge)
 Kutatás, ötletek gyűjtése, POC-ok, értékelések.
 - `discover/drafts/` - nyers ötletek, brainstorm
-- `discover/` - POC eredmények, értékelések
+- `discover/poc-runs/` - POC futtatások eredményei
+- `discover/` - értékelések, kutatási dokumentumok
+
+#### POC futtatások kezelése
+
+Új POC eredmény mentése:
+1. Mappa létrehozása: `discover/poc-runs/YYYY-MM-DD-<poc-neve>/`
+2. `input/` és `output/` almappák létrehozása
+3. `README.md` létrehozása frontmatter-rel:
+   ```yaml
+   ---
+   date: YYYY-MM-DD
+   poc-name: Human readable name
+   status: completed | incomplete | failed
+   domain: Optional domain context
+   ---
+   ```
+4. Cél, input, output, eredmények dokumentálása a README-ben
 
 ### 2. Define (converge)
 Probléma definiálása, kidolgozott dokumentumok.

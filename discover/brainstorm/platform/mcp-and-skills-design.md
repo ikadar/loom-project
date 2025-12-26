@@ -1,13 +1,18 @@
 ---
 date: 2025-12-19
+updated: 2025-12-26
 author: Claude Sonnet 4.5 + Human collaboration
-version: 1.0
+version: 1.1
 status: draft
-purpose: Claude Code as the primary human-AI communication platform for AI-PDS
-related: poc-tooling-design.md
+purpose: MCP Server és Skills design a Loom platformhoz
+see-also:
+  - platform-architecture.md              # Technikai architektúra
+  - ../business/platform-business-model.md # Üzleti modell, monetizáció
 ---
 
-# Claude Code mint AI-PDS Platform
+# Loom MCP Server és Skills Design
+
+> **Megjegyzés:** Ez a dokumentum az MCP tool/resource definíciókat és skill prompt template-eket tartalmazza. Az architektúra a `platform-architecture.md`-ben, az üzleti modell a `platform-business-model.md`-ben van.
 
 ## 💡 Alapvető felismerés
 
@@ -15,7 +20,7 @@ related: poc-tooling-design.md
 
 **Ez mindent megváltoztat!**
 
-Ahelyett, hogy egy teljesen új CLI tool-t építenénk (`ai-pds`), **használjuk Claude Code-ot mint platformot** és építsünk rá!
+Ahelyett, hogy egy teljesen új CLI tool-t építenénk (`loom`), **használjuk Claude Code-ot mint platformot** és építsünk rá!
 
 ---
 
@@ -40,7 +45,7 @@ Ahelyett, hogy egy teljesen új CLI tool-t építenénk (`ai-pds`), **használju
 
 ---
 
-## 🏗️ Új Architektúra: AI-PDS mint Claude Code Plugin/Skill System
+## 🏗️ Új Architektúra: Loom mint Claude Code Plugin/Skill System
 
 ### Option A: Claude Code Skills
 
@@ -48,14 +53,14 @@ Ahelyett, hogy egy teljesen új CLI tool-t építenénk (`ai-pds`), **használju
 
 ```markdown
 ---
-name: ai-pds-generate
-description: Generate AI-PDS documentation from natural language
-tags: [ai-pds, documentation]
+name: loom-generate
+description: Generate Loom documentation from natural language
+tags: [loom, documentation]
 ---
 
-# AI-PDS Document Generation
+# Loom Document Generation
 
-You are an AI-PDS documentation generator. Your task is to generate structured
+You are an Loom documentation generator. Your task is to generate structured
 documentation from natural language input.
 
 ## Workflow:
@@ -97,10 +102,10 @@ Generate:
 claude-code
 
 # In conversation:
-User: /ai-pds-generate Add User entity with email, name, role
+User: /loom-generate Add User entity with email, name, role
 
 # Claude Code loads the skill prompt and follows instructions
-Claude: I'll generate AI-PDS documentation for the User entity.
+Claude: I'll generate Loom documentation for the User entity.
 
 Analyzing input...
 - Entity: User
@@ -127,29 +132,29 @@ Approve? [y/n]
 - Custom agents
 
 ```
-.claude/plugins/ai-pds/
+.claude/plugins/loom/
 ├── plugin.json              # Plugin manifest
 ├── skills/
-│   ├── generate.md          # /ai-pds-generate skill
-│   ├── validate.md          # /ai-pds-validate skill
-│   ├── trace.md             # /ai-pds-trace skill
-│   └── test-generate.md     # /ai-pds-test-generate skill
+│   ├── generate.md          # /loom-generate skill
+│   ├── validate.md          # /loom-validate skill
+│   ├── trace.md             # /loom-trace skill
+│   └── test-generate.md     # /loom-test-generate skill
 ├── agents/
 │   ├── doc-generator.md     # Document generator agent
 │   └── test-generator.md    # Test generator agent
 ├── hooks/
 │   └── pre-commit.sh        # Auto-validate before commit
 └── tools/
-    └── ai-pds-validator.js  # Custom validation tool (optional)
+    └── loom-validator.js  # Custom validation tool (optional)
 ```
 
 **plugin.json:**
 ```json
 {
-  "name": "ai-pds",
+  "name": "loom",
   "version": "0.1.0",
   "description": "AI-Ready Project Documentation System for Claude Code",
-  "author": "AI-PDS Team",
+  "author": "Loom Team",
   "skills": [
     "skills/generate.md",
     "skills/validate.md",
@@ -169,14 +174,14 @@ Approve? [y/n]
 **Usage:**
 ```bash
 # Install plugin
-claude-code plugin install ai-pds
+claude-code plugin install loom
 
 # Use skills
 claude-code
 
-User: /ai-pds-generate Add User entity
-User: /ai-pds-test-generate --from-user-story US-001
-User: /ai-pds-trace validate
+User: /loom-generate Add User entity
+User: /loom-test-generate --from-user-story US-001
+User: /loom-trace validate
 ```
 
 ### Option C: Hybrid - Built-in + Extensions
@@ -767,12 +772,12 @@ Claude: [Pre-commit hook triggers loom_validate]
                   │
                   ▼
 ┌─────────────────────────────────────────────────┐
-│ User: /ai-pds-generate "Add User entity..."     │
+│ User: /loom-generate "Add User entity..."     │
 └─────────────────┬───────────────────────────────┘
                   │
                   ▼
 ┌─────────────────────────────────────────────────┐
-│ Claude Code loads ai-pds-generate skill         │
+│ Claude Code loads loom-generate skill         │
 │ (Extended prompt with instructions)             │
 └─────────────────┬───────────────────────────────┘
                   │
@@ -817,9 +822,9 @@ Claude: [Pre-commit hook triggers loom_validate]
 **Példa conversation:**
 
 ```
-User: /ai-pds-generate Add User entity with email, name, and role (admin or regular)
+User: /loom-generate Add User entity with email, name, and role (admin or regular)
 
-Claude: I'll generate AI-PDS documentation for the User entity.
+Claude: I'll generate Loom documentation for the User entity.
 
 Analyzing your input:
 - Entity: User
@@ -886,14 +891,14 @@ Done! Generated documentation for User entity.
 
 Next steps:
 - Review the generated docs
-- Run /ai-pds-validate to check consistency
-- Generate tests: /ai-pds-test-generate --from-user-story US-001
+- Run /loom-validate to check consistency
+- Generate tests: /loom-test-generate --from-user-story US-001
 
-User: /ai-pds-test-generate --from-user-story US-001
+User: /loom-test-generate --from-user-story US-001
 
 Claude: I'll generate tests for US-001.
 
-[Loads ai-pds-test-generate skill]
+[Loads loom-test-generate skill]
 [Analyzes US-001 and acceptance criteria]
 [Generates test plan]
 
@@ -949,26 +954,26 @@ Done! US-001 is fully tested.
 
 ## 🎨 Skills Design
 
-### Skill 1: /ai-pds-generate
+### Skill 1: /loom-generate
 
-**File:** `.claude/plugins/ai-pds/skills/generate.md`
+**File:** `.claude/plugins/loom/skills/generate.md`
 
 ```markdown
 ---
-name: ai-pds-generate
-description: Generate AI-PDS documentation from natural language
-tags: [ai-pds, documentation, generation]
+name: loom-generate
+description: Generate Loom documentation from natural language
+tags: [loom, documentation, generation]
 when_to_use: |
-  Use this when the user wants to generate or update AI-PDS documentation.
+  Use this when the user wants to generate or update Loom documentation.
   Examples:
   - "Add User entity with email and name"
   - "Create user story for user registration"
   - "Document the authentication flow"
 ---
 
-# AI-PDS Documentation Generator
+# Loom Documentation Generator
 
-You are an expert at generating structured, AI-ready project documentation following the AI-PDS specification.
+You are an expert at generating structured, AI-ready project documentation following the Loom specification.
 
 ## Your Task
 
@@ -1068,15 +1073,15 @@ status: "draft"
 - Show clear diff previews
 ```
 
-### Skill 2: /ai-pds-test-generate
+### Skill 2: /loom-test-generate
 
-**File:** `.claude/plugins/ai-pds/skills/test-generate.md`
+**File:** `.claude/plugins/loom/skills/test-generate.md`
 
 ```markdown
 ---
-name: ai-pds-test-generate
+name: loom-test-generate
 description: Generate comprehensive test suite from requirements (TDAI)
-tags: [ai-pds, testing, tdai]
+tags: [loom, testing, tdai]
 arguments:
   - name: from-user-story
     description: User story ID to generate tests for
@@ -1086,7 +1091,7 @@ when_to_use: |
   This implements Test-Driven AI Development (TDAI).
 ---
 
-# AI-PDS Test Generator (TDAI)
+# Loom Test Generator (TDAI)
 
 You are an expert at generating comprehensive test suites that prevent AI hallucination.
 
@@ -1165,7 +1170,7 @@ For EACH acceptance criterion, generate:
 
 ## Example
 
-User: /ai-pds-test-generate --from-user-story US-001
+User: /loom-test-generate --from-user-story US-001
 
 You:
 1. Read US-001
@@ -1177,18 +1182,18 @@ You:
 6. Write test files
 ```
 
-### Skill 3: /ai-pds-validate
+### Skill 3: /loom-validate
 
 ```markdown
 ---
-name: ai-pds-validate
-description: Validate AI-PDS documentation consistency and traceability
-tags: [ai-pds, validation, traceability]
+name: loom-validate
+description: Validate Loom documentation consistency and traceability
+tags: [loom, validation, traceability]
 ---
 
-# AI-PDS Validator
+# Loom Validator
 
-Validate AI-PDS documentation for:
+Validate Loom documentation for:
 
 1. **YAML frontmatter**
    - All docs have `status` field
@@ -1209,7 +1214,7 @@ Validate AI-PDS documentation for:
 
 ## Workflow
 
-1. Use Glob to find all .md files in ai-pds/
+1. Use Glob to find all .md files in loom/
 2. Use Read to parse each file
 3. Extract IDs, validate format
 4. Check cross-references
@@ -1218,7 +1223,7 @@ Validate AI-PDS documentation for:
 ## Output Format
 
 ```
-AI-PDS Validation Report
+Loom Validation Report
 ────────────────────────────────
 
 ✓ YAML frontmatter (12 files checked)
@@ -1232,16 +1237,16 @@ Summary: 2 errors, 1 warning
 ```
 ```
 
-### Skill 4: /ai-pds-trace
+### Skill 4: /loom-trace
 
 ```markdown
 ---
-name: ai-pds-trace
+name: loom-trace
 description: Show traceability map (requirement → code → test)
-tags: [ai-pds, traceability, visualization]
+tags: [loom, traceability, visualization]
 ---
 
-# AI-PDS Traceability Map
+# Loom Traceability Map
 
 Show visual traceability graph.
 
@@ -1288,31 +1293,31 @@ Summary:
 ### Option 1: Claude Code Plugin Registry (future)
 
 ```bash
-claude-code plugin install ai-pds
+claude-code plugin install loom
 ```
 
 ### Option 2: Git Repository
 
 ```bash
 # Clone plugin repo
-git clone https://github.com/ai-pds/claude-code-plugin.git
+git clone https://github.com/loom/claude-code-plugin.git
 
 # Copy to Claude plugins directory
-cp -r claude-code-plugin ~/.claude/plugins/ai-pds
+cp -r claude-code-plugin ~/.claude/plugins/loom
 
 # Or symlink for development
-ln -s $(pwd)/claude-code-plugin ~/.claude/plugins/ai-pds
+ln -s $(pwd)/claude-code-plugin ~/.claude/plugins/loom
 ```
 
 ### Option 3: Template Repository
 
 ```bash
 # Use template
-gh repo create my-project --template ai-pds/claude-code-template
+gh repo create my-project --template loom/claude-code-template
 
 cd my-project
 
-# .claude/plugins/ai-pds already included!
+# .claude/plugins/loom already included!
 
 # Start using
 claude-code
@@ -1322,7 +1327,7 @@ claude-code
 
 ## 🎯 Benefits vs. Standalone CLI
 
-| Aspect | Standalone CLI (`ai-pds`) | Claude Code Plugin |
+| Aspect | Standalone CLI (`loom`) | Claude Code Plugin |
 |--------|---------------------------|-------------------|
 | **Development time** | 2-4 weeks | 3-5 days |
 | **Code to maintain** | ~5000 LOC | ~500 LOC (mostly prompts) |
@@ -1346,11 +1351,11 @@ claude-code
 
 **Tasks:**
 - [ ] Create plugin structure
-- [ ] Write `/ai-pds-generate` skill
+- [ ] Write `/loom-generate` skill
   - [ ] Entity generation template
   - [ ] User story generation template
   - [ ] ID generation logic (in prompt)
-- [ ] Write `/ai-pds-validate` skill
+- [ ] Write `/loom-validate` skill
   - [ ] Basic validation rules (in prompt)
 - [ ] Test with demo project (manual)
 
@@ -1361,11 +1366,11 @@ claude-code
 **Goal:** Test generation + validation working
 
 **Tasks:**
-- [ ] Write `/ai-pds-test-generate` skill
+- [ ] Write `/loom-test-generate` skill
   - [ ] Test plan generation
   - [ ] Unit/Integration/E2E templates
   - [ ] Negative test enforcer (in prompt)
-- [ ] Write `/ai-pds-trace` skill
+- [ ] Write `/loom-trace` skill
   - [ ] Traceability parsing logic
   - [ ] Graph rendering
 - [ ] Test E2E workflow
@@ -1380,7 +1385,7 @@ claude-code
 - [ ] Refine skills based on testing
 - [ ] Write documentation (README, examples)
 - [ ] Create demo project (TODO app)
-  - [ ] Use Claude Code + AI-PDS plugin
+  - [ ] Use Claude Code + Loom plugin
   - [ ] Full docs, tests, code with traceability
 - [ ] Record demo video
 - [ ] Publish plugin
