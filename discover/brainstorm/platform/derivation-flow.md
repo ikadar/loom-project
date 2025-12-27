@@ -441,6 +441,204 @@
 
 ---
 
+## Hol ad értéket a Gemini?
+
+### 1. L0 Classification → Domain-aware Checklists
+
+**MVP (Gemini nélkül):**
+```
+User L0: "Payment processing application..."
+         │
+         ▼
+    Generic checklist:
+    - [ ] Soft delete or hard delete?
+    - [ ] Audit logging needed?
+    - [ ] ...generic questions...
+```
+
+**M6+ (Gemini-vel):**
+```
+User L0: "Payment processing application..."
+         │
+         ▼
+    ┌─────────────┐
+    │   Gemini    │  "Ez fintech domain"
+    └─────────────┘
+         │
+         ▼
+    Domain-specific checklist:
+    - [ ] PCI-DSS compliance level?
+    - [ ] Idempotency key strategy?
+    - [ ] Transaction retry policy?
+    - [ ] Chargeback handling?
+    - [ ] ...fintech-specific questions...
+```
+
+**Hozzáadott érték:** User relevánsabb kérdéseket kap, kevesebb "nem alkalmazható" válasz.
+
+---
+
+### 2. RAG Query Enhancement → Jobb Knowledge Context
+
+**MVP (Gemini nélkül):**
+```
+Nincs RAG, nincs external knowledge.
+Claude csak a saját training data-ból dolgozik.
+```
+
+**M6+ (Gemini-vel):**
+```
+Domain: fintech
+         │
+         ▼
+    ┌─────────────┐
+    │   Gemini    │  Query expansion
+    └─────────────┘
+         │
+         ▼
+    Search queries:
+    - "payment idempotency patterns"
+    - "transaction state machine"
+    - "PCI DSS requirements for APIs"
+         │
+         ▼
+    ┌─────────────┐
+    │  Vector DB  │
+    └─────────────┘
+         │
+         ▼
+    Relevant knowledge chunks → Claude context
+```
+
+**Hozzáadott érték:** Claude jobb AC/BR-eket generál, mert ismeri az industry best practice-eket.
+
+---
+
+### 3. Retrieval Reranking → Kevesebb, jobb context
+
+**MVP (Gemini nélkül):**
+```
+Nincs RAG.
+```
+
+**M6+ (Gemini-vel):**
+```
+Vector DB returns 20 chunks (by similarity)
+         │
+         ▼
+    ┌─────────────┐
+    │   Gemini    │  "Which 5 are most relevant
+    └─────────────┘   for THIS specific L0?"
+         │
+         ▼
+    Top 5 chunks → Claude (less tokens, better focus)
+```
+
+**Hozzáadott érték:**
+- Kevesebb token = olcsóbb Claude hívás
+- Jobb relevancia = jobb output minőség
+
+---
+
+### 4. Ambiguity Prioritization → Jobb UX
+
+**MVP (Gemini nélkül):**
+```
+Claude detects 47 ambiguities
+         │
+         ▼
+    User gets ALL 47 questions
+    (random order, overwhelming)
+```
+
+**M6+ (Gemini-vel):**
+```
+Claude detects 47 ambiguities
+         │
+         ▼
+    ┌─────────────┐
+    │   Gemini    │  "Prioritize for fintech"
+    └─────────────┘
+         │
+         ▼
+    CRITICAL (must answer): 5 questions
+    IMPORTANT (should answer): 12 questions
+    MINOR (can skip, use defaults): 30 questions
+         │
+         ▼
+    User answers 5-17 questions instead of 47
+```
+
+**Hozzáadott érték:**
+- User nem overwhelmed
+- Kritikus döntések először
+- Minor kérdések → intelligent defaults
+
+---
+
+### 5. Output Validation → Quality Gate
+
+**MVP (Gemini nélkül):**
+```
+Claude generates L1
+         │
+         ▼
+    Output saved directly
+    (no quality check)
+```
+
+**M6+ (Gemini-vel):**
+```
+Claude generates L1
+         │
+         ▼
+    ┌─────────────┐
+    │   Gemini    │  "Is this complete? Consistent?"
+    └─────────────┘
+         │
+         ▼
+    Validation result:
+    ✓ Valid JSON
+    ✓ All entities covered
+    ⚠ Warning: AC-TXN-003 missing error case
+    ⚠ Warning: No BR for transaction timeout
+         │
+         ▼
+    User sees warnings, can re-run or accept
+```
+
+**Hozzáadott érték:**
+- Kevesebb hibás output
+- User bizalom növelése
+- Olcsóbb, mint Claude-dal újragenerálni
+
+---
+
+## Értékösszesítő táblázat
+
+| Gemini Use Case | User Benefit | Business Benefit |
+|-----------------|--------------|------------------|
+| L0 Classification | Releváns kérdések | Magasabb completion rate |
+| RAG Enhancement | Jobb AC/BR minőség | Differenciáló feature |
+| Reranking | Gyorsabb válasz | Alacsonyabb Claude token cost |
+| Prioritization | Kevesebb kérdés | Jobb UX → retention |
+| Validation | Megbízható output | Kevesebb support ticket |
+
+---
+
+## ROI elemzés
+
+**Gemini költség:** ~$0.003/session
+
+**Megtakarítás/érték:**
+- User kevesebb időt tölt (prioritizált kérdések) → jobb NPS
+- Jobb output → kevesebb újrafuttatás → user elégedettség
+- Domain-aware → magasabb perceived value → jobb conversion
+
+**Következtetés:** A ~$0.003/session befektetés jelentős UX és minőségjavulást hoz.
+
+---
+
 ## Lépések összefoglaló
 
 ### MVP (M4-M5)
