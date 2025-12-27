@@ -639,6 +639,114 @@ Claude generates L1
 
 ---
 
+## Alternatíva: Gemini csak strukturális feladatokra
+
+> **Probléma:** Nem biztos, hogy Gemini megbízható domain-specifikus tudással rendelkezik (pl. fintech, healthcare szabályok).
+
+### Domain-függő vs Strukturális feladatok
+
+| Use Case | Domain tudás kell? | Gemini megbízható? |
+|----------|-------------------|-------------------|
+| L0 Classification | ✅ Igen | 🔶 Bizonytalan |
+| RAG Query Enhancement | ✅ Igen | 🔶 Bizonytalan |
+| Retrieval Reranking | ❌ Nem | ✅ Igen |
+| Ambiguity Prioritization | 🔶 Részben | 🔶 Bizonytalan |
+| Output Validation | ❌ Nem | ✅ Igen |
+
+### Alternatív architektúra
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ DOMAIN TUDÁS FORRÁSAI (nem Gemini)                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────────┐   ┌─────────────────┐   ┌───────────────┐  │
+│  │ Keyword/Regex   │   │ Domain Taxonomy │   │ RAG Knowledge │  │
+│  │ Classification  │   │ (JSON lookup)   │   │ Base          │  │
+│  └─────────────────┘   └─────────────────┘   └───────────────┘  │
+│                                                                 │
+│  "payment" → fintech    fintech → [pci,     Vector search      │
+│  "patient" → healthcare          idempotency] (no LLM needed)  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ GEMINI: Csak strukturális feladatok                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────────┐   ┌─────────────────┐                      │
+│  │ Reranking       │   │ Output          │                      │
+│  │ (relevancia)    │   │ Validation      │                      │
+│  └─────────────────┘   └─────────────────┘                      │
+│                                                                 │
+│  "Melyik chunk         "Valid JSON?                             │
+│   relevánsabb           Hiányzik valami?                        │
+│   EHHEZ a query-hez?"   Konzisztens?"                           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Domain taxonomy példa
+
+```json
+{
+  "fintech": {
+    "keywords": ["payment", "transaction", "bank", "money", "transfer"],
+    "checklists": ["pci-dss", "idempotency", "audit-trail"],
+    "rag_boost_terms": ["payment processing", "financial transaction"]
+  },
+  "healthcare": {
+    "keywords": ["patient", "medical", "health", "diagnosis", "treatment"],
+    "checklists": ["hipaa", "phi-handling", "consent"],
+    "rag_boost_terms": ["medical records", "patient data"]
+  },
+  "ecommerce": {
+    "keywords": ["cart", "order", "product", "checkout", "shipping"],
+    "checklists": ["inventory", "pricing", "fulfillment"],
+    "rag_boost_terms": ["order management", "product catalog"]
+  }
+}
+```
+
+### Feladatok összehasonlítása
+
+| # | Feladat | Gemini + Domain | Gemini Strukturális |
+|---|---------|-----------------|---------------------|
+| 1 | L0 Classification | Gemini | Keyword + taxonomy |
+| 2 | Domain checklist | Gemini | Lookup table |
+| 3 | RAG query expand | Gemini | Szinonima tábla |
+| 4 | Reranking | Gemini | **Gemini** |
+| 5 | Prioritization | Gemini | Claude severity + szabályok |
+| 6 | Validation | Gemini | **Gemini** |
+
+### Két megközelítés összehasonlítása
+
+| Aspektus | Gemini + Domain tudás | Gemini csak strukturális |
+|----------|----------------------|--------------------------|
+| Domain pontosság | 🔶 Gemini-re bízva | ✅ Kontrollált (lookup) |
+| Költség/session | ~$0.003 | ~$0.001 |
+| Gemini hívások | 4-5 | 2 |
+| Komplexitás | Közepes | Alacsonyabb |
+| Karbantarthatóság | Nehezebb | Könnyebb (JSON edit) |
+| Bővíthetőség | Implicit (LLM) | Explicit (szabályok) |
+| Új domain hozzáadása | Automatikus (ha LLM ismeri) | Manuális (JSON bővítés) |
+
+### Javaslat
+
+**Konzervatív megközelítés (ajánlott kezdésnek):**
+- Domain: **Keyword + Taxonomy lookup**
+- Reranking: **Gemini**
+- Validation: **Gemini**
+
+**Agresszív megközelítés (ha Gemini domain tudása jónak bizonyul):**
+- Minden: **Gemini**
+
+**Hibrid lehetőség:**
+- Ismert domain-ök: **Lookup** (megbízható)
+- Ismeretlen domain: **Gemini fallback** (best effort)
+
+---
+
 ## Lépések összefoglaló
 
 ### MVP (M4-M5)
