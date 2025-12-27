@@ -5,14 +5,25 @@
 
 ---
 
+## Részletes Tervek
+
+| Milestone | Részletes terv |
+|-----------|----------------|
+| M2 | [M2-business-model.md](./M2-business-model.md) |
+| M3 | [M3-product-spec.md](./M3-product-spec.md) |
+| M4 | [M4-mcp-server-cli.md](./M4-mcp-server-cli.md) |
+| M5 | [M5-mvp-launch.md](./M5-mvp-launch.md) |
+
+---
+
 ## Milestone Áttekintés
 
 ```
 M1 ──► M2 ──► M3 ──► M4 ──► M5 ──► M6 ──► M7
 │      │      │      │      │      │      │
 ▼      ▼      ▼      ▼      ▼      ▼      ▼
-Vízió  Üzleti Termék MCP    MVP    Beta   Ops
-       Modell Spec   Server Launch
+Vízió  Üzleti Termék Platform MVP   Beta   Ops
+       Modell Spec   Impl.   Launch
 ```
 
 ---
@@ -42,15 +53,17 @@ Vízió  Üzleti Termék MCP    MVP    Beta   Ops
 
 | Szint | Fókusz |
 |-------|--------|
-| 💰 Business | Pricing, monetizáció, Anthropic policy |
-| 📦 Product | Value proposition finomítás |
-| 🔧 Technical | Architektúra irány (CLI + SaaS) |
+| 💰 Business | Pricing, monetizáció, Anthropic policy, tudásbázis stratégia |
+| 📦 Product | Value proposition finomítás, tudásterületek |
+| 🔧 Technical | Architektúra irány (CLI + SaaS + RAG + Website) |
 
 **Deliver:**
 - [x] Kettős pozícionálás (Free CLI + Paid SaaS)
 - [x] Tier struktúra (Free/Pro/Team/Enterprise)
 - [ ] Anthropic policy megerősítés
 - [x] Platform architektúra döntés
+- [ ] Tudásbázis stratégia (tartalom, licensz, IP)
+- [ ] Website stratégia (domain, hosting)
 
 **Státusz:** 🔄 FOLYAMATBAN (policy tisztázás pending)
 
@@ -62,21 +75,23 @@ Vízió  Üzleti Termék MCP    MVP    Beta   Ops
 
 | Szint | Fókusz |
 |-------|--------|
-| 💰 Business | Go-to-market stratégia |
-| 📦 Product | Feature prioritizálás, MVP scope |
-| 🔧 Technical | API design, adatmodell |
+| 💰 Business | Go-to-market stratégia, tudás mint érték |
+| 📦 Product | Feature prioritizálás, MVP scope, tudáskategóriák, website UX |
+| 🔧 Technical | API design, adatmodell, RAG specifikáció |
 
 **Deliver:**
 - [ ] MVP feature lista (prioritizált)
 - [ ] User journey dokumentáció
 - [ ] API specifikáció
 - [ ] Adatmodell
+- [ ] Tudásbázis specifikáció (formátum, kategóriák, minőség)
+- [ ] Website specifikáció (struktúra, content plan)
 
 **Státusz:** ⏳ PENDING
 
 ---
 
-## M4: MCP Server & CLI
+## M4: Platform Implementáció
 
 **Cél:** Core technikai infrastruktúra
 
@@ -84,13 +99,15 @@ Vízió  Üzleti Termék MCP    MVP    Beta   Ops
 |-------|--------|
 | 💰 Business | - |
 | 📦 Product | - |
-| 🔧 Technical | MCP Server implementáció, CLI wrapper |
+| 🔧 Technical | MCP Server, CLI, SaaS Backend, RAG, Website |
 
 **Deliver:**
 - [ ] `@loom/mcp-server` npm package
 - [ ] `loom_validate`, `loom_derive` tools
 - [ ] `loom-cli` Go binary
 - [ ] SaaS API endpoints (prompts, license)
+- [ ] RAG pipeline (embedding, vector DB, retrieval)
+- [ ] Website (landing, docs, pricing, auth)
 
 **Státusz:** ⏳ PENDING
 
@@ -103,15 +120,16 @@ Vízió  Üzleti Termék MCP    MVP    Beta   Ops
 | Szint | Fókusz |
 |-------|--------|
 | 💰 Business | Pricing aktiválás, első ügyfelek |
-| 📦 Product | Core features működnek |
-| 🔧 Technical | Production deployment |
+| 📦 Product | Core features működnek, kezdeti tudáskorpusz |
+| 🔧 Technical | Production deployment, RAG live, Website live |
 
 **Deliver:**
 - [ ] Public npm/brew release
-- [ ] loom.dev SaaS live
+- [ ] loom.dev Website live
 - [ ] Free tier működik
 - [ ] Dokumentáció (user-facing)
 - [ ] 3-5 beta user feedback
+- [ ] MVP tudáskorpusz deployed
 
 **Státusz:** ⏳ PENDING
 
