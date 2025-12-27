@@ -195,6 +195,10 @@ Egy derivation session (~5 LLM hívás, Gemini Flash-Lite):
 
 ---
 
+## Kapcsolódó dokumentumok
+
+- [derivation-flow.md](./derivation-flow.md) - Teljes L0→L1 deriválási flow (MVP és M6+ verzió)
+
 ## Források
 
 - [Gemini API Pricing](https://ai.google.dev/gemini-api/docs/pricing)
