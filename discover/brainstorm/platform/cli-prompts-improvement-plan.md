@@ -548,11 +548,18 @@ loom-tooling/
 3. [x] Döntés: hibrid tesztelés ✅
 4. [x] Benchmark készlet struktúra létrehozása ✅
 5. [x] Benchmark 1 (ecommerce) elkészítése ✅
-6. [ ] Fázis 1.1 implementálás (Entity Analysis)
+6. [x] Fázis 1.1 implementálás (Entity Analysis) ✅
 7. [ ] Tesztelés benchmark 1-gyel
-8. [ ] Fázis 1.2 implementálás (Operation Analysis)
-9. [ ] Fázis 2 implementálás (Domain Modeling)
+8. [x] Fázis 1.2 implementálás (Operation Analysis) ✅
+9. [x] Fázis 2 implementálás (Domain Modeling) ✅
 10. [ ] Full benchmark teszt
+
+## Implementáció Részletei
+
+**Átstrukturálás (2025-12-29):**
+- Promptok külső .md fájlokba kiszervezve (`loom-cli/prompts/*.md`)
+- Go kód `go:embed` direktívával tölti be
+- Prompt fájlok: domain-discovery.md, entity-analysis.md, operation-analysis.md, derivation.md, interview.md
 
 ---
 

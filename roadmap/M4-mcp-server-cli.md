@@ -56,7 +56,14 @@
   - [ ] MVP resources lista
   - [ ] MVP prompts lista
 - [ ] **CLI scope**
-  - [ ] MVP commands (derive, validate, login)
+  - [ ] MVP commands (teljes deriválási folyamat)
+    - [ ] `analyze` - L0 → ambiguities
+    - [ ] `interview` - ambiguities → decisions
+    - [ ] `derive` - L0+decisions → L1 (AC, BR)
+    - [ ] `derive-l2` - L1 → L2 (Test Cases, Tech Specs)
+    - [ ] `derive-l3` - L2 → L3 (Implementation Skeletons)
+    - [ ] `validate` - dokumentum validálás
+    - [ ] `login` - SaaS auth
   - [ ] Config management
   - [ ] Session handling
 - [ ] **RAG scope**
@@ -102,11 +109,24 @@
   - [ ] Go module inicializálás
   - [ ] Cobra/Viper integráció
   - [ ] Cross-compile setup
-- [ ] **Commands implementáció**
-  - [ ] `loom login` command
-  - [ ] `loom derive` command
-  - [ ] `loom validate` command
-  - [ ] `loom status` command
+- [ ] **L0→L1 Commands** (✅ Implementálva)
+  - [x] `loom analyze` - domain discovery, ambiguity detection
+  - [x] `loom interview` - structured interview flow
+  - [x] `loom derive` - L1 generation (AC, BR)
+- [ ] **L1→L2 Commands** (Új)
+  - [ ] `loom derive-l2` command
+  - [ ] Test Case (TC) generálás AC-kből
+  - [ ] Technical Spec generálás BR-ekből
+  - [ ] Traceability: TC → AC, Spec → BR
+- [ ] **L2→L3 Commands** (Új)
+  - [ ] `loom derive-l3` command
+  - [ ] Implementation skeleton generálás
+  - [ ] API spec generálás (OpenAPI)
+  - [ ] Traceability: Code → TC → AC
+- [ ] **Prompts** (Új L2/L3-hoz)
+  - [ ] `test-case-generation.md` prompt
+  - [ ] `tech-spec-generation.md` prompt
+  - [ ] `implementation-skeleton.md` prompt
 - [ ] **SaaS integration**
   - [ ] API client
   - [ ] License validation

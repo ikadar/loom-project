@@ -101,10 +101,24 @@ Vízió  Üzleti Termék Platform MVP   Beta   Ops
 | 📦 Product | - |
 | 🔧 Technical | MCP Server, CLI, SaaS Backend, RAG, Website |
 
+**Deriválási szintek (MVP scope):**
+```
+L0 (User Stories)
+    │
+    ▼ analyze + interview
+L1 (Acceptance Criteria, Business Rules)
+    │
+    ▼ derive-l2
+L2 (Test Cases, Technical Specs)
+    │
+    ▼ derive-l3
+L3 (Implementation Skeletons, API Specs)
+```
+
 **Deliver:**
 - [ ] `@loom/mcp-server` npm package
-- [ ] `loom_validate`, `loom_derive` tools
-- [ ] `loom-cli` Go binary
+- [ ] `loom_validate`, `loom_derive` tools (teljes L0→L1→L2→L3)
+- [ ] `loom-cli` Go binary (teljes deriválási folyamat)
 - [ ] SaaS API endpoints (prompts, license)
 - [ ] RAG pipeline (embedding, vector DB, retrieval)
 - [ ] Website (landing, docs, pricing, auth)
