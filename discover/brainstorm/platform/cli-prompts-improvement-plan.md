@@ -546,8 +546,8 @@ loom-tooling/
 1. [x] Döntés: külső checklistek ✅
 2. [x] Döntés: teljes checklist minden híváskor ✅
 3. [x] Döntés: hibrid tesztelés ✅
-4. [ ] Benchmark készlet struktúra létrehozása
-5. [ ] Benchmark 1 (ecommerce) elkészítése
+4. [x] Benchmark készlet struktúra létrehozása ✅
+5. [x] Benchmark 1 (ecommerce) elkészítése ✅
 6. [ ] Fázis 1.1 implementálás (Entity Analysis)
 7. [ ] Tesztelés benchmark 1-gyel
 8. [ ] Fázis 1.2 implementálás (Operation Analysis)
@@ -563,6 +563,7 @@ loom-tooling/
 - `commands/loom-derive-domain.md`
 - `docs/checklists/entity-checklist.md`
 - `docs/checklists/operation-checklist.md`
+- `test/benchmark/` - Benchmark teszt készlet (01-ecommerce-order elkészült)
 
 ---
 
