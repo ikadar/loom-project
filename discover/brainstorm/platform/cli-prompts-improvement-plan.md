@@ -403,35 +403,156 @@ Use the checklist from: {{.ChecklistPath}}
 
 ---
 
-## Döntési Pontok
+## Döntések
 
 1. **Beépített vs Külső checklistek?**
-   - a) Minden a promptba beépítve (~1000 sor prompts.go)
-   - b) Külső fájlok hivatkozása (jelenlegi checklists/ mappa)
-   - c) Hibrid: Core a promptban, részletek külső fájlban
+   - ✅ **Külső fájlok hivatkozása** (jelenlegi `checklists/` mappa)
+   - A promptok hivatkozzák a checklist fájlokat
+   - SaaS is ezeket szolgáltatja ki
 
 2. **Token limit kezelés?**
-   - Ha a prompt túl hosszú, hogyan kezeljük?
-   - a) Teljes checklist minden híváskor
-   - b) Releváns szekciók dinamikus kiválasztása
-   - c) Összefoglaló prompt + részletes follow-up
+   - ✅ **Teljes checklist minden híváskor**
+   - Nincs dinamikus szekció kiválasztás
+   - Egyszerűbb implementáció
 
 3. **Tesztelés?**
-   - Hogyan teszteljük, hogy a bővített promptok jobbak?
-   - a) A/B test valós user-ekkel
-   - b) Benchmark készlet (ismert L0 → elvárt ambiguities)
-   - c) Manual review
+   - ✅ **Hibrid megközelítés:**
+     - M4: Benchmark készlet + Manual review
+     - M6: A/B test valós user-ekkel
+
+---
+
+## Benchmark Teszt Készlet
+
+### Struktúra
+
+```
+loom-tooling/
+└── test/
+    └── benchmark/
+        ├── README.md
+        ├── 01-ecommerce-order/
+        │   ├── input-l0.md
+        │   ├── expected-entities.json
+        │   ├── expected-ambiguities.json
+        │   └── expected-severity.json
+        ├── 02-scheduling-calendar/
+        │   └── ...
+        ├── 03-fintech-payment/
+        │   └── ...
+        ├── 04-simple-crud-todo/
+        │   └── ...
+        └── 05-multitenant-saas/
+            └── ...
+```
+
+### Benchmark Dokumentumok
+
+| # | Domain | Komplexitás | Fókusz |
+|---|--------|-------------|--------|
+| 1 | E-commerce (Order) | Közepes | Entity lifecycle, relationships |
+| 2 | Scheduling (Calendar) | Magas | Temporal constraints, conflicts |
+| 3 | Fintech (Payment) | Magas | State machine, error handling |
+| 4 | Simple CRUD (Todo) | Alacsony | Basic coverage, baseline |
+| 5 | Multi-tenant SaaS | Magas | Authorization, isolation |
+
+### Expected Output Formátum
+
+**expected-entities.json:**
+```json
+{
+  "entities": [
+    {
+      "name": "Order",
+      "type": "entity",
+      "confidence": "high",
+      "attributes_expected": ["id", "status", "total", "customerId"],
+      "relationships_expected": ["Customer", "OrderItem"]
+    }
+  ]
+}
+```
+
+**expected-ambiguities.json:**
+```json
+{
+  "minimum_ambiguities": [
+    {
+      "id_pattern": "AMB-ENT-*",
+      "subject": "Order",
+      "aspect_contains": "deletion",
+      "severity": "critical"
+    },
+    {
+      "id_pattern": "AMB-ENT-*",
+      "subject": "OrderItem",
+      "aspect_contains": "cascade",
+      "severity": "critical"
+    }
+  ],
+  "minimum_count": {
+    "critical": 5,
+    "important": 10,
+    "minor": 5
+  }
+}
+```
+
+### Teszt Runner
+
+```bash
+# Benchmark futtatás
+./test/run-benchmark.sh
+
+# Output:
+# Benchmark 1: ecommerce-order
+#   Entities found: 5/5 ✅
+#   Critical ambiguities: 7/5 ✅ (exceeded minimum)
+#   Important ambiguities: 12/10 ✅
+#   Missing expected: 0 ✅
+#
+# Benchmark 2: scheduling-calendar
+#   ...
+#
+# OVERALL: 5/5 passed
+```
+
+### Értékelési Kritériumok
+
+| Metrika | Pass Criteria |
+|---------|---------------|
+| Entity detection | ≥90% of expected entities found |
+| Ambiguity count | ≥ minimum per severity |
+| Critical coverage | 100% of expected critical ambiguities |
+| False positive rate | <20% irrelevant ambiguities |
+| Edge case generation | ≥5 auto-generated per entity |
+
+---
+
+## Tesztelési Terv
+
+| Fázis | Tesztelés | Mikor | Cél |
+|-------|-----------|-------|-----|
+| Fejlesztés közben | Manual review | M4 | Kvalitatív feedback |
+| Fázis 1 után | Benchmark 1-2 | M4 | Entity/Operation coverage |
+| Fázis 2 után | Benchmark 3-5 | M4 | Domain modeling quality |
+| MVP előtt | Full benchmark | M4 | Regression check |
+| MVP után | A/B test | M6 | User validation |
 
 ---
 
 ## Következő Lépések
 
-1. [ ] Döntés: beépített vs külső checklistek
-2. [ ] Fázis 1.1 implementálás (Entity Analysis)
-3. [ ] Tesztelés benchmark L0 dokumentummal
-4. [ ] Fázis 1.2 implementálás (Operation Analysis)
-5. [ ] Fázis 2 implementálás (Domain Modeling)
-6. [ ] Teljes flow teszt
+1. [x] Döntés: külső checklistek ✅
+2. [x] Döntés: teljes checklist minden híváskor ✅
+3. [x] Döntés: hibrid tesztelés ✅
+4. [ ] Benchmark készlet struktúra létrehozása
+5. [ ] Benchmark 1 (ecommerce) elkészítése
+6. [ ] Fázis 1.1 implementálás (Entity Analysis)
+7. [ ] Tesztelés benchmark 1-gyel
+8. [ ] Fázis 1.2 implementálás (Operation Analysis)
+9. [ ] Fázis 2 implementálás (Domain Modeling)
+10. [ ] Full benchmark teszt
 
 ---
 
