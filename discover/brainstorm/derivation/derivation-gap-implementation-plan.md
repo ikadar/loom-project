@@ -33,7 +33,7 @@
 |-----------|---------|-----------|---------|
 | Quality | TDAI (Test-Driven AI) test generation | P1 - Critical | ✅ DONE |
 | Quality | Validation layer (`loom-cli validate`) | P1 - Critical | ✅ DONE |
-| Quality | Traceability #anchor refs | P1 - Critical | 🔲 TODO |
+| Quality | Traceability #anchor refs | P1 - Critical | ✅ DONE |
 | Workflow | Human approval interactive mode | P2 - Important | 🔲 TODO |
 | Input | Domain Vocabulary külön input | P3 - Nice to have | 🔲 TODO |
 | Input | NFR (Non-Functional Reqs) kezelés | P3 - Nice to have | 🔲 TODO |
@@ -444,12 +444,18 @@ loom-cli derive --input-file ./l0.md --nfr ./nfr.md --output-dir ./l1
 - V008: Negative ratio check működik (30.5% ✓)
 - Commit: `da47cbf`
 
-### Sprint 3: Traceability Anchors (P1)
-1. [ ] Anchor generálás minden format függvényben
-2. [ ] Reference link formátum implementálás
-3. [ ] Bidirectional link generálás
-4. [ ] Validation integráció
-5. [ ] Teszt
+### Sprint 3: Traceability Anchors (P1) ✅ COMPLETE
+1. [x] Anchor generálás minden format függvényben
+2. [x] Reference link formátum implementálás
+3. [x] Cross-layer link generálás (L2→L1)
+4. [x] Teszt
+
+**Eredmények (2024-12-31):**
+- L1: AC, BR, Entity, VO, BC fejlécekhez {#anchor}
+- L1: Decision referenciák → [ID](decisions.md#anchor)
+- L2: TC, TS, IC, AGG, SEQ, TBL fejlécekhez {#anchor}
+- L2: Cross-layer linkek → [AC-XXX](../l1/acceptance-criteria.md#anchor)
+- Commit: `dd5d541`
 
 ### Sprint 4: Interactive Mode (P2)
 1. [ ] `--interactive` flag implementálás
@@ -548,10 +554,10 @@ loom-cli validate [options]
 - [x] Mind a 10 validation rule implementálva
 - [x] Exit code 1 ha error van
 
-### Sprint 3 (Anchors) Done When:
-- [ ] Minden ID mellett van `{#anchor}`
-- [ ] Traceability section markdown linkeket tartalmaz
-- [ ] Validation ellenőrzi a linkeket
+### Sprint 3 (Anchors) Done When: ✅ COMPLETE
+- [x] Minden ID mellett van `{#anchor}`
+- [x] Traceability section markdown linkeket tartalmaz
+- [x] Cross-layer linkek működnek (L2→L1)
 
 ### Sprint 4 (Interactive) Done When:
 - [ ] `--interactive` flag működik
@@ -572,4 +578,5 @@ loom-cli validate [options]
 3. [x] Implementálás és tesztelés
 4. [x] Commit (`e411710`)
 5. [x] Sprint 2: Validation Layer (`da47cbf`)
-6. [ ] Sprint 3 indítása: Traceability Anchors
+6. [x] Sprint 3: Traceability Anchors (`dd5d541`)
+7. [ ] Sprint 4 indítása: Interactive Mode
