@@ -853,6 +853,64 @@ Track these metrics to ensure derivation quality:
 
 ---
 
+## 🏗️ Architecture Decisions
+
+### ADR-001: CLI Orchestration vs Claude Code Subagents
+
+**Döntés:** CLI orchestration (Go kód irányít)
+
+**Kontextus:**
+A dokumentáció "AI Agents" szekciója említi a specializált agent-eket (DomainModelAgent, TestGeneratorAgent, stb.). Két implementációs megközelítés lehetséges:
+
+1. **Claude Code Task tool subagents** - Claude Code interaktívan indít subagent-eket
+2. **CLI orchestration** - Go kód hívja a `claude -p` parancsot többször
+
+**Döntés indoklása:**
+- A loom-cli már Claude Code-ot hív headless módban (`claude -p`)
+- A Task tool subagent-ek interaktív Claude Code session-t igényelnek
+- A két megközelítés nem közvetlenül kompatibilis
+- CLI orchestration explicit, reprodukálható, batch-műveletekhez optimális
+
+**Következmény:**
+Az "AI Agent" nevek (DomainModelAgent, stb.) koncepcionálisak - a tényleges implementáció prompt template + `claude -p` hívás.
+
+---
+
+### ADR-002: Monolitikus cmd fájlok vs Go Agent modulok
+
+**Döntés:** Jelenlegi monolitikus struktúra marad (egyelőre)
+
+**Kontextus:**
+A derive parancsok (`derive_l2.go`: 797 sor, `derive_l3.go`: 876 sor) monolitikusak - type definíciók, prompt building, Claude hívások, JSON parsing, markdown generálás mind egy fájlban.
+
+**Alternatíva (elhalasztva):**
+```
+internal/agents/
+├── domain_model/agent.go
+├── interface_contract/agent.go
+├── test_generator/agent.go
+└── ...
+```
+
+Előnyök lennének:
+- Jobb tesztelhetőség (izolált unit testek)
+- Tisztább felelősség (SRP)
+- Könnyebb bővítés (új agent = új package)
+- Kevesebb kód duplikáció (közös Agent interface)
+
+**Döntés indoklása:**
+- A jelenlegi kód működik
+- A refaktorálás jelentős befektetés
+- Nincs akut fájdalom (még)
+- Prioritás: feature-ök > refaktorálás
+
+**Újraértékelés triggerei:**
+- Ha új deriváció típust kell hozzáadni
+- Ha a kód karbantartása nehézkessé válik
+- Ha unit tesztek kellenek az agent logikához
+
+---
+
 ## 🚀 Roadmap
 
 ### Phase 1: Basic Derivation (MVP) ✅ COMPLETED
