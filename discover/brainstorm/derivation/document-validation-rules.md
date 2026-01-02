@@ -25,9 +25,17 @@ A Loom deriválási folyamat során generált dokumentumoknak meg kell felelniü
 Minden Loom dokumentumnak tartalmaznia kell YAML frontmatter-t.
 
 **Kötelező mezők:**
-- `status` - A dokumentum állapota
+
+| Mező | Leírás | Példa |
+|------|--------|-------|
+| `title` | Dokumentum címe | `"Domain Model"` |
+| `generated` | Generálás időpontja (RFC3339) | `2026-01-03T00:09:26+01:00` |
+| `status` | Dokumentum állapota | `draft` |
+| `level` | Deriválási szint | `L1`, `L2`, `L3` |
+| `loom-cli-version` | CLI verzió | `0.3.0` |
 
 **Status értékek:**
+
 | Érték | Jelentés |
 |-------|----------|
 | `draft` | Munka alatt |
@@ -35,12 +43,22 @@ Minden Loom dokumentumnak tartalmaznia kell YAML frontmatter-t.
 | `approved` | Jóváhagyva |
 | `living` | Aktívan karbantartott |
 
+**Level értékek:**
+
+| Érték | Jelentés |
+|-------|----------|
+| `L1` | Strategic Design (Domain Model, AC, BR, Bounded Contexts) |
+| `L2` | Tactical Design (Tech Specs, Contracts, Aggregates, Sequences, Data Model) |
+| `L3` | Operational Design (Test Cases, Skeletons, Tickets, Events, Dependencies) |
+
 **Példa:**
 ```yaml
 ---
-title: "User Stories"
+title: "Domain Model"
+generated: 2026-01-03T00:09:26+01:00
 status: draft
-created: 2025-01-15
+level: L1
+loom-cli-version: 0.3.0
 ---
 ```
 
@@ -51,8 +69,9 @@ created: 2025-01-15
 Belső hivatkozások ellenőrzése.
 
 **Szabályok:**
-- Minden belső link (pl. `[domain model](../domain-modelling/domain-model.md)`) létező fájlra kell mutasson
-- Relatív útvonalak helyesek legyenek
+- Minden belső link létező fájlra kell mutasson
+- Azonos szinten: `[BR-001](business-rules.md#br-001)`
+- Szintek között: `[ENT-001](../l1/domain-model.md#ent-001)`
 - Anchor linkek (#section) létező fejezetre mutassanak
 
 **Validáció:**
@@ -79,16 +98,25 @@ A dokumentumok közötti fogalmi és entitás konzisztencia ellenőrzése.
 
 ## 4. Struktúra Validáció
 
-A fájlok megfelelő mappában vannak-e.
+A fájlok megfelelő mappában vannak-e. A Loom level-alapú mappastruktúrát használ.
 
 **Mappastruktúra szabályok:**
 
-| Dokumentum típus | Elvárt mappa |
-|------------------|--------------|
-| Domain modelling docs | `domain-modelling/` |
-| Requirements docs | `requirements/` |
-| Technical specs | `technical/` |
-| Test specs | `tests/` |
+| Level | Elvárt mappa | Dokumentumok |
+|-------|--------------|--------------|
+| L1 | `l1/` | domain-model.md, bounded-context-map.md, acceptance-criteria.md, business-rules.md, decisions.md |
+| L2 | `l2/` | tech-specs.md, interface-contracts.md, aggregate-design.md, sequence-design.md, initial-data-model.md |
+| L3 | `l3/` | test-cases.md, implementation-skeletons.md, feature-tickets.md, service-boundaries.md, event-message-design.md, dependency-graph.md, openapi.json |
+
+**Validációs szabály:**
+- A dokumentum `level:` frontmatter mezőjének egyeznie kell a mappa nevével
+- Példa: `l2/tech-specs.md` → `level: L2` ✓
+- Példa: `l1/tech-specs.md` → `level: L2` ✗ (mappa/level mismatch)
+
+**Miért level-alapú és nem típus-alapú?**
+- A deriválás szint-szinten történik (`derive` → `derive-l2` → `derive-l3`)
+- Egy szinten belül a dokumentumok együtt használatosak és egymásra hivatkoznak
+- Egyszerűbb cross-referenciák (ugyanabban a mappában vannak)
 
 ---
 
