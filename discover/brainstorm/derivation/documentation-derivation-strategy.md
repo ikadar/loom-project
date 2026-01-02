@@ -8,6 +8,7 @@ related:
   - ../core-concepts/bidirectional-traceability-design.md
   - ../core-concepts/test-driven-ai-development.md
   - ../core-concepts/structured-interview-pattern.md
+  - ../platform/platform-architecture.md
 based-on: ai-pds-specification/9000-appendix/9200-example-ai-pds structure
 ---
 
