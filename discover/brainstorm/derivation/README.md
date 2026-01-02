@@ -16,73 +16,105 @@ A loom-cli derivation rendszere automatikusan generál dokumentációt struktur�
 | Fájl | Leírás | Státusz |
 |------|--------|---------|
 | `documentation-derivation-strategy.md` | Teljes derivation stratégia és specifikáció | Aktív |
-| `derivation-example-walkthrough.md` | Konkrét példa végigvezetés | Aktív |
+| `derivation-example-walkthrough.md` | Kaszkád deriváció példa (Phase 3 vision) | Koncepció |
 | `derivation-visual-diagram.md` | Mermaid diagramok a rendszerhez | Aktív |
-| `document-validation-rules.md` | Validációs szabályok | Aktív |
-| `ux-ui-derivation-architecture.md` | UI/UX derivation (future work) | Tervezett |
+| `document-validation-rules.md` | Validációs szabályok specifikáció | Spec |
+| `ux-ui-derivation-architecture.md` | UI/UX derivation (future work) | Draft |
 
 ## Derivation Szintek
 
 ```
 L0: FOUNDATIONAL (Human Input)
-  └─ user-stories, domain-vocabulary, NFRs
+  └─ user-stories.md, domain-vocabulary.md, nfr.md
 
-L1: PRIMARY DERIVATION (AI 80%)
-  └─ domain-model, acceptance-criteria, business-rules, bounded-context
+L1: PRIMARY DERIVATION (loom-cli derive)
+  └─ domain-model.md, acceptance-criteria.md, business-rules.md, bounded-context-map.md
 
-L2: SECONDARY DERIVATION (AI 90%)
-  └─ interface-contracts, sequence-design, data-model, aggregate-design
-  └─ tech-specs (technical specifications)
+L2: SECONDARY DERIVATION (loom-cli derive-l2)
+  └─ interface-contracts.md, sequence-design.md, initial-data-model.md
+  └─ aggregate-design.md, tech-specs.md
 
-L3: TERTIARY DERIVATION (AI 95%)
-  └─ test-cases, api-spec, implementation-skeletons
-  └─ feature-tickets, service-boundaries, event-design, dependency-graph
+L3: TERTIARY DERIVATION (loom-cli derive-l3)
+  └─ test-cases.md, openapi.json, implementation-skeletons.md
+  └─ feature-tickets.md, service-boundaries.md, event-message-design.md
+  └─ dependency-graph.md
 ```
 
 ## Implementáció (loom-cli)
 
-### L1 Derivation
+### Teljes workflow
+
 ```bash
-loom derive l1 --input l0-folder --output l1-folder
+# L0 analízis és interview
+loom-cli analyze --input-dir l0-folder --output-dir l1-folder
+loom-cli interview --init l1-folder/analysis.json
+
+# L1 Derivation (Strategic Design)
+loom-cli derive --input-dir l0-folder --output-dir l1-folder
+
+# L2 Derivation (Tactical Design)
+loom-cli derive-l2 --input-dir l1-folder --output-dir l2-folder
+
+# L3 Derivation (Operational Design)
+loom-cli derive-l3 --input-dir l2-folder --output-dir l3-folder
+
+# Validation
+loom-cli validate --input-dir output-folder --level ALL
 ```
 
-### L2 Derivation
-```bash
-loom derive l2 --input l1-folder --output l2-folder
-```
+### Egyszerűsített példák
 
-### L3 Derivation
 ```bash
-loom derive l3 --input l2-folder --output l3-folder
-```
+# L1: domain model, AC, BR, bounded context
+loom-cli derive --input-dir ./l0 --output-dir ./l1
 
-### Validation
-```bash
-loom validate --dir output-folder
+# L2: contracts, sequences, tech specs
+loom-cli derive-l2 --input-dir ./l1 --output-dir ./l2
+
+# L3: tests, API, skeletons, tickets
+loom-cli derive-l3 --input-dir ./l2 --output-dir ./l3
 ```
 
 ## Prompt Fájlok
 
 A derivation promptok: `loom-tooling/loom-cli/prompts/`
 
-- `derive-l2.md` - L2 fő derivation
+### Analyze & Interview
+- `domain-discovery.md` - Domain felfedezés
+- `entity-analysis.md` - Entity elemzés
+- `operation-analysis.md` - Műveletek elemzése
+- `interview.md` - Strukturált interjú
+
+### L1 Derivation
+- `derivation.md` - Fő L1 derivation
+- `derive-domain-model.md` - Domain model generálás
+- `derive-bounded-context.md` - Bounded context map
+
+### L2 Derivation
+- `derive-l2.md` - L2 fő orchestráció
+- `derive-interface-contracts.md` - API contracts
+- `derive-sequence-design.md` - Sequence diagramok
+- `derive-data-model.md` - Initial data model
+- `derive-aggregate-design.md` - DDD aggregates
 - `derive-tech-specs.md` - Technical specifications
-- `derive-test-cases.md` - Test cases (L3)
-- `derive-l3.md` - L3 fő derivation
-- `derive-l3-api.md` - OpenAPI spec generálás
+
+### L3 Derivation
+- `derive-l3.md` - L3 fő orchestráció
+- `derive-test-cases.md` - TDAI test cases
+- `derive-l3-api.md` - OpenAPI spec
 - `derive-l3-skeletons.md` - Implementation skeletons
 - `derive-feature-tickets.md` - Feature tickets
 - `derive-service-boundaries.md` - Service boundaries
-- `derive-event-design.md` - Event design
+- `derive-event-design.md` - Event/message design
 - `derive-dependency-graph.md` - Dependency graph
 
 ## ID Conventions
 
 | Szint | Prefix | Példa |
 |-------|--------|-------|
-| L1 | ENT-, AC-, BR- | ENT-CUST-001, AC-ORD-002 |
-| L2 | TS-, DM-, SEQ- | TS-CUST-001, DM-001 |
-| L3 | TC-, SKEL-, DEP-, EVT-, CMD-, SVC-, FDT- | TC-ORD-001, SKEL-CUST-001 |
+| L1 | ENT-, VO-, AC-, BR-, BC- | ENT-CUSTOMER, AC-ORD-001, BR-SHIP-001 |
+| L2 | IC-, SEQ-, AGG-, DM-, TS- | IC-ORDER-001, SEQ-CHECKOUT-001, TS-BR-AUTH-001 |
+| L3 | TC-, SKEL-, SVC-, EVT-, CMD-, FDT-, DEP- | TC-AC-ORD-001-P01, SKEL-ORDER-001 |
 
 ## Archivált Dokumentumok
 
@@ -97,5 +129,6 @@ A `archive/` mappában találhatók a befejezett implementációs tervek:
 ## Kapcsolódó
 
 - `loom-tooling/loom-cli/` - CLI implementáció
+- `loom-tooling/loom-cli/cmd/` - Command implementációk
 - `loom-tooling/test/benchmark/` - Benchmark teszt eredmények
 - `ai-dop-spec/` - AI-DOP specifikáció
