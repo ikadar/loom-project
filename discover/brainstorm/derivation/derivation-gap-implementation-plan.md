@@ -34,7 +34,7 @@
 | Quality | TDAI (Test-Driven AI) test generation | P1 - Critical | ✅ DONE |
 | Quality | Validation layer (`loom-cli validate`) | P1 - Critical | ✅ DONE |
 | Quality | Traceability #anchor refs | P1 - Critical | ✅ DONE |
-| Workflow | Human approval interactive mode | P2 - Important | 🔲 TODO |
+| Workflow | Human approval interactive mode | P2 - Important | ✅ DONE |
 | Input | Domain Vocabulary külön input | P3 - Nice to have | 🔲 TODO |
 | Input | NFR (Non-Functional Reqs) kezelés | P3 - Nice to have | 🔲 TODO |
 | L2 | Workflow Definitions | P3 - Nice to have | 🔲 TODO |
@@ -457,12 +457,18 @@ loom-cli derive --input-file ./l0.md --nfr ./nfr.md --output-dir ./l1
 - L2: Cross-layer linkek → [AC-XXX](../l1/acceptance-criteria.md#anchor)
 - Commit: `dd5d541`
 
-### Sprint 4: Interactive Mode (P2)
-1. [ ] `--interactive` flag implementálás
-2. [ ] Preview rendering (box format)
-3. [ ] Approval action handler
-4. [ ] Editor integration
-5. [ ] Teszt
+### Sprint 4: Interactive Mode (P2) ✅ COMPLETE
+1. [x] `--interactive` flag implementálás
+2. [x] Preview rendering (box format)
+3. [x] Approval action handler (A/E/R/S/Q)
+4. [x] Editor integration ($EDITOR)
+5. [x] Teszt
+
+**Eredmények (2024-12-31):**
+- Új fájl: cmd/interactive.go (RenderPreview, AskApproval, EditContent, ConfirmQuit)
+- derive-l2 integráció: minden fájl írás előtt interaktív jóváhagyás
+- Akciók: Approve, Edit, Skip, Quit (Regenerate későbbre halasztva)
+- Commit: `33f38ec`
 
 ### Sprint 5: Extra Inputs (P3)
 1. [ ] Vocabulary input parsing
@@ -559,10 +565,10 @@ loom-cli validate [options]
 - [x] Traceability section markdown linkeket tartalmaz
 - [x] Cross-layer linkek működnek (L2→L1)
 
-### Sprint 4 (Interactive) Done When:
-- [ ] `--interactive` flag működik
-- [ ] Preview megjelenik
-- [ ] A/E/R/S/Q actions működnek
+### Sprint 4 (Interactive) Done When: ✅ COMPLETE
+- [x] `--interactive` flag működik
+- [x] Preview megjelenik (box format)
+- [x] A/E/S/Q actions működnek (R = későbbre halasztva)
 
 ### Sprint 5 (Inputs) Done When:
 - [ ] `--vocabulary` és `--nfr` flag-ek működnek
@@ -579,4 +585,5 @@ loom-cli validate [options]
 4. [x] Commit (`e411710`)
 5. [x] Sprint 2: Validation Layer (`da47cbf`)
 6. [x] Sprint 3: Traceability Anchors (`dd5d541`)
-7. [ ] Sprint 4 indítása: Interactive Mode
+7. [x] Sprint 4: Interactive Mode (`33f38ec`)
+8. [ ] Sprint 5 indítása: Extra Inputs (Vocabulary, NFR)
