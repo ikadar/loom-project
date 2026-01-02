@@ -46,8 +46,8 @@ L3: TERTIARY DERIVATION (loom-cli derive-l3)
 
 ```bash
 # L0 analízis és interview
-loom-cli analyze --input-dir l0-folder --output-dir l1-folder
-loom-cli interview --init l1-folder/analysis.json
+loom-cli analyze --input-dir l0-folder > analysis.json
+loom-cli interview --init analysis.json
 
 # L1 Derivation (Strategic Design)
 loom-cli derive --input-dir l0-folder --output-dir l1-folder

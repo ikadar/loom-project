@@ -2,6 +2,8 @@
 title: Documentation Derivation - Visual Diagrams
 date: 2025-12-19
 purpose: Mermaid diagrams for derivation system visualization
+status: active
+note: Agent names (DomainModelAgent, etc.) are conceptual - see ADR-001 in documentation-derivation-strategy.md
 ---
 
 # Documentation Derivation - Visual Diagrams
@@ -29,13 +31,17 @@ graph TB
         SD[sequence-design.md<br/>🤖 AI → ✓ Auto-approved]
         IDM[initial-data-model.md<br/>🤖 AI → ✓ Auto-approved]
         AD[aggregate-design.md<br/>🤖 AI → ✓ Auto-approved]
+        TS[tech-specs.md<br/>🤖 AI → ✓ Auto-approved]
     end
 
     subgraph L3["LEVEL 3: TERTIARY DERIVATION (AI 95%)"]
-        TC[test-case.md<br/>🤖 AI → 👤 Test Plan: 3 min]
-        FT[feature-definition-ticket.md<br/>🤖 AI → ✓ Auto-approved]
+        TC[test-cases.md<br/>🤖 AI → 👤 Test Plan: 3 min]
+        API[openapi.json<br/>🤖 AI → ✓ Auto-approved]
+        SKEL[implementation-skeletons.md<br/>🤖 AI → ✓ Auto-approved]
+        FT[feature-tickets.md<br/>🤖 AI → ✓ Auto-approved]
         SB[service-boundaries.md<br/>🤖 AI → ✓ Auto-approved]
         EM[event-message-design.md<br/>🤖 AI → ✓ Auto-approved]
+        DEP[dependency-graph.md<br/>🤖 AI → ✓ Auto-approved]
     end
 
     %% L0 → L1 Derivations

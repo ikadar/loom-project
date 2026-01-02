@@ -3,6 +3,8 @@ date: 2025-12-19
 title: Documentation Derivation - Complete Walkthrough Example
 purpose: Concrete end-to-end example of how docs are derived in Loom
 related: documentation-derivation-strategy.md
+status: phase-3-vision
+note: This document describes the future cascade derivation workflow (Phase 3), not the current CLI implementation
 ---
 
 # Documentation Derivation - Complete Walkthrough Example

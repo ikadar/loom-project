@@ -58,7 +58,7 @@ Documentation is organized in **4 derivation levels**, from human-provided found
 │   - Sequence Designs (flows, interactions)                     │
 │   - Initial Data Model (DB schema)                             │
 │   - Aggregate Design (DDD aggregates)                          │
-│   - Workflow Definitions (process flows)                       │
+│   - Tech Specs (technical specifications from BR)              │
 │                                                                 │
 │ Human effort: 10%  │  AI effort: 90% (mostly autonomous)       │
 └─────────────────┬───────────────────────────────────────────────┘
@@ -66,7 +66,9 @@ Documentation is organized in **4 derivation levels**, from human-provided found
                   ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │ LEVEL 3: TERTIARY DERIVATION (AI-Generated from L0+L1+L2)      │
-│   - Test Cases (from acceptance criteria)                      │
+│   - Test Cases (from acceptance criteria, TDAI)                │
+│   - OpenAPI Spec (from interface contracts)                    │
+│   - Implementation Skeletons (code templates)                  │
 │   - Feature Definition Tickets (implementation specs)          │
 │   - Service Boundaries (microservices)                         │
 │   - Event/Message Design (event schemas)                       │

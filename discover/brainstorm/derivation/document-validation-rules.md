@@ -4,7 +4,7 @@ status: draft
 created: 2025-12-26
 extracted-from: platform/poc-tooling-design.md
 see-also:
-  - bidirectional-traceability-design.md
+  - ../core-concepts/bidirectional-traceability-design.md
   - ../platform/platform-architecture.md
 ---
 
@@ -110,16 +110,37 @@ A fájlok megfelelő mappában vannak-e.
 ### Példa output
 
 ```
-$ loom validate ./specs
+$ loom-cli validate --input-dir ./specs
 
-✓ YAML frontmatter: OK
-⚠ Link validation: 2 warnings
-  - user-stories.md:45 → ../domain-modelling/glossary.md (not found)
-  - acceptance-criteria.md:78 → ../business-rules.md#BR-099 (anchor not found)
-✗ Consistency: 1 error
-  - Entity "Invoice" in user-stories.md not defined in domain-model.md
+Validating ALL documents in ./specs...
 
-Result: 1 error, 2 warnings
+Phase 1: Collecting IDs...
+Phase 2: Structural Validation...
+Phase 3: Traceability Validation...
+Phase 4: Completeness Validation...
+Phase 5: TDAI Validation...
+
+========================================
+   VALIDATION RESULTS
+   Level: ALL
+========================================
+Structural Validation:
+  ✓ [V001] All 5 documents have IDs
+  ✓ [V002] All 42 IDs follow expected patterns
+
+Traceability Validation:
+  ✓ [V003] All 28 references are valid
+
+Completeness Validation:
+  ✓ [V005] All 15 ACs have test cases
+
+TDAI Validation:
+  ✓ [V008] Negative test ratio: 25.4% (>= 20%)
+  ✓ [V009] All 15 ACs have hallucination prevention tests
+
+========================================
+Summary: 6 passed, 0 failed, 0 warnings
+========================================
 ```
 
 ---
