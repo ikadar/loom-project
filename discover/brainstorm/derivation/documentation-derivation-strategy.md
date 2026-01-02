@@ -911,18 +911,18 @@ Track these metrics to ensure derivation quality:
 
 ## 🚀 Roadmap
 
-### Phase 1: Basic Derivation (MVP)
-- [ ] L0 → L1 derivations (vocabulary → model, stories → AC)
-- [ ] Manual approval workflow
-- [ ] Basic validation
+### Phase 1: Basic Derivation (MVP) ✅ COMPLETED
+- [x] L0 → L1 derivations (vocabulary → model, stories → AC) - `loom-cli derive`
+- [x] Manual approval workflow - Interactive mode (`-i` flag)
+- [x] Basic validation - `loom-cli validate`
 
-### Phase 2: Advanced Derivation
-- [ ] L1 → L2 derivations (model → contracts, sequences)
-- [ ] L2 → L3 derivations (AC → tests with TDAI)
-- [ ] Automated validation
-- [ ] Dependency graph visualization
+### Phase 2: Advanced Derivation ✅ COMPLETED
+- [x] L1 → L2 derivations (model → contracts, sequences) - `loom-cli derive-l2`
+- [x] L2 → L3 derivations (AC → tests with TDAI) - `loom-cli derive-l3`
+- [x] Automated validation - `loom-cli validate --level ALL`
+- [x] Dependency graph visualization - Mermaid diagrams in dependency-graph.md
 
-### Phase 3: Intelligent Derivation
+### Phase 3: Intelligent Derivation (Future)
 - [ ] AI learns from corrections
 - [ ] Confidence scoring (auto-approve high confidence)
 - [ ] Incremental re-derivation (only affected docs)
@@ -932,4 +932,4 @@ Track these metrics to ensure derivation quality:
 
 *This Documentation Derivation Strategy is the core of the Loom (AI-PDS) system. It defines how human intent flows through multiple levels of AI-generated documentation, ensuring consistency, traceability, and quality at every step.*
 
-*Next step: Implement derivation agents in Claude Code plugin.*
+*Implementation: See `loom-tooling/loom-cli/` for the CLI implementation.*
