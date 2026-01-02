@@ -37,7 +37,7 @@
 | Workflow | Human approval interactive mode | P2 - Important | ✅ DONE |
 | Input | Domain Vocabulary külön input | P3 - Nice to have | ✅ DONE |
 | Input | NFR (Non-Functional Reqs) kezelés | P3 - Nice to have | ✅ DONE |
-| L2 | Workflow Definitions | P3 - Nice to have | 🔲 TODO |
+| L2 | Workflow Definitions | P3 - Nice to have | ⏭️ SKIP (sequence-design lefedi) |
 
 ---
 
