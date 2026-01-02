@@ -927,6 +927,13 @@ Előnyök lennének:
 - [x] Automated validation - `loom-cli validate --level ALL`
 - [x] Dependency graph visualization - Mermaid diagrams in dependency-graph.md
 
+### Phase 2.5: Validation Enhancements (Planned)
+- [ ] YAML frontmatter validáció (status, date mezők)
+- [ ] Folder struktúra validáció (dokumentum típus → elvárt mappa)
+- [ ] V004: Bidirectional link check (jelenleg SKIP)
+- [ ] V006: Entity-aggregate validáció (jelenleg SKIP)
+- [ ] V007: Service-interface contract validáció (jelenleg SKIP)
+
 ### Phase 3: Agent System Features (Planned)
 
 **Kaszkád deriváció**
