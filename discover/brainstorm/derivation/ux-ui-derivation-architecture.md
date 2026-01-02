@@ -409,6 +409,5 @@ Separate skill chain because:
 
 ## References
 
-- Real-world UX-UI documentation: `/loom-project/tmp/ux-ui/`
-- Loom Roadmap: `/loom-project/roadmap/next-steps-roadmap.md`
-- Structured Interview Pattern: `/loom-project/thinking/structured-interview-pattern.md`
+- Structured Interview Pattern: [structured-interview-pattern.md](../core-concepts/structured-interview-pattern.md)
+- Documentation Derivation Strategy: [documentation-derivation-strategy.md](./documentation-derivation-strategy.md)

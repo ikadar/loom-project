@@ -126,5 +126,5 @@ Result: 1 error, 2 warnings
 
 ## Kapcsolódó
 
-- [Bidirectional Traceability](./bidirectional-traceability-design.md) - Kód ↔ Dokumentum szinkronizáció
+- [Bidirectional Traceability](../core-concepts/bidirectional-traceability-design.md) - Kód ↔ Dokumentum szinkronizáció
 - [Platform Architecture](../platform/platform-architecture.md) - CLI és validálás technikai részletei
