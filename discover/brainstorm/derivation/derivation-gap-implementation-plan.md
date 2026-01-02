@@ -35,8 +35,8 @@
 | Quality | Validation layer (`loom-cli validate`) | P1 - Critical | ✅ DONE |
 | Quality | Traceability #anchor refs | P1 - Critical | ✅ DONE |
 | Workflow | Human approval interactive mode | P2 - Important | ✅ DONE |
-| Input | Domain Vocabulary külön input | P3 - Nice to have | 🔲 TODO |
-| Input | NFR (Non-Functional Reqs) kezelés | P3 - Nice to have | 🔲 TODO |
+| Input | Domain Vocabulary külön input | P3 - Nice to have | ✅ DONE |
+| Input | NFR (Non-Functional Reqs) kezelés | P3 - Nice to have | ✅ DONE |
 | L2 | Workflow Definitions | P3 - Nice to have | 🔲 TODO |
 
 ---
@@ -470,11 +470,17 @@ loom-cli derive --input-file ./l0.md --nfr ./nfr.md --output-dir ./l1
 - Akciók: Approve, Edit, Skip, Quit (Regenerate későbbre halasztva)
 - Commit: `33f38ec`
 
-### Sprint 5: Extra Inputs (P3)
-1. [ ] Vocabulary input parsing
-2. [ ] NFR input parsing
-3. [ ] Derivation integration
-4. [ ] Teszt
+### Sprint 5: Extra Inputs (P3) ✅ COMPLETE
+1. [x] Vocabulary input parsing
+2. [x] NFR input parsing
+3. [x] Derivation integration
+4. [x] Build & Test
+
+**Eredmények (2024-12-31):**
+- Config: `--vocabulary` és `--nfr` flagek
+- Vocabulary → Domain Model + Bounded Context promptokba
+- NFR → AC/BR deriválás promptjába
+- Commit: `5061cec`
 
 ---
 
@@ -570,10 +576,10 @@ loom-cli validate [options]
 - [x] Preview megjelenik (box format)
 - [x] A/E/S/Q actions működnek (R = későbbre halasztva)
 
-### Sprint 5 (Inputs) Done When:
-- [ ] `--vocabulary` és `--nfr` flag-ek működnek
-- [ ] Vocabulary befolyásolja a domain-model generálást
-- [ ] NFR megjelenik a tech-specs-ben
+### Sprint 5 (Inputs) Done When: ✅ COMPLETE
+- [x] `--vocabulary` és `--nfr` flag-ek működnek
+- [x] Vocabulary befolyásolja a domain-model és bounded context generálást
+- [x] NFR bekerül az AC/BR deriválás kontextusába
 
 ---
 
@@ -586,4 +592,6 @@ loom-cli validate [options]
 5. [x] Sprint 2: Validation Layer (`da47cbf`)
 6. [x] Sprint 3: Traceability Anchors (`dd5d541`)
 7. [x] Sprint 4: Interactive Mode (`33f38ec`)
-8. [ ] Sprint 5 indítása: Extra Inputs (Vocabulary, NFR)
+8. [x] Sprint 5: Extra Inputs (`5061cec`)
+
+🎉 **MINDEN SPRINT KÉSZ!** (P1 + P2 + P3)
