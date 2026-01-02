@@ -924,11 +924,29 @@ Előnyök lennének:
 - [x] Automated validation - `loom-cli validate --level ALL`
 - [x] Dependency graph visualization - Mermaid diagrams in dependency-graph.md
 
-### Phase 3: Intelligent Derivation (Future)
+### Phase 3: Agent System Features (Planned)
+
+**Kaszkád deriváció**
+- [ ] Változás automatikus propagálása függő szintekre
+- [ ] Új user story → AC → contracts → tests (egy paranccsal)
+- [ ] Dependency-aware re-derivation (csak érintett dokumentumok)
+
+**Natural language interface**
+- [ ] Intent Parser: természetes nyelvű input elemzése
+- [ ] Automatikus derivation plan generálás
+- [ ] Érintett entitások/dokumentumok azonosítása
+- [ ] Példa: `loom generate "Add quote reminder email feature"`
+
+**Intelligens approval workflow**
+- [ ] L1: mindig emberi jóváhagyás (alapvető hatás)
+- [ ] L2: opcionális (contracts igen, többi auto)
+- [ ] L3: test plan jóváhagyás, generálás automatikus
+- [ ] Confidence scoring (magas confidence → auto-approve)
+
+### Phase 4: Learning & Analytics (Future)
 - [ ] AI learns from corrections
-- [ ] Confidence scoring (auto-approve high confidence)
-- [ ] Incremental re-derivation (only affected docs)
 - [ ] Derivation analytics & insights
+- [ ] Pattern detection across projects
 
 ---
 
