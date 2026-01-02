@@ -1,244 +1,101 @@
 ---
-title: Documentation Derivation System - Overview
-date: 2025-12-19
-purpose: Quick reference guide for Loom documentation derivation
+title: Documentation Derivation System
+date: 2026-01-02
+purpose: Overview of loom derivation architecture and implementation
+status: active
 ---
 
-# Documentation Derivation System - Quick Reference
+# Documentation Derivation System
 
-## 📚 Documents in this Package
+## Overview
 
-### 1. **documentation-derivation-strategy.md**
-**Comprehensive strategy document**
+A loom-cli derivation rendszere automatikusan generál dokumentációt strukturált szinteken (L0 → L1 → L2 → L3).
 
-Contains:
-- 4-level derivation hierarchy (L0→L1→L2→L3)
-- Detailed derivation rules for every document type
-- AI agent responsibility matrix
-- Validation & quality gates
-- Claude Code skills design
-- Dependency graph
-- Success metrics
+## Dokumentumok
 
-**Use this for:** Understanding the complete derivation system, implementation planning
+| Fájl | Leírás | Státusz |
+|------|--------|---------|
+| `documentation-derivation-strategy.md` | Teljes derivation stratégia és specifikáció | Aktív |
+| `derivation-example-walkthrough.md` | Konkrét példa végigvezetés | Aktív |
+| `derivation-visual-diagram.md` | Mermaid diagramok a rendszerhez | Aktív |
+| `document-validation-rules.md` | Validációs szabályok | Aktív |
+| `ux-ui-derivation-architecture.md` | UI/UX derivation (future work) | Tervezett |
 
----
-
-### 2. **derivation-example-walkthrough.md**
-**Concrete end-to-end example**
-
-Scenario: "Customer wants to cancel a quote"
-
-Shows:
-- Step-by-step derivation from L0 → L3
-- Exact input/output for each AI agent
-- Time estimates (5 min human input → 500+ lines of docs!)
-- Complete test generation (10 tests with TDAI)
-- Validation results
-- 95% time savings
-
-**Use this for:** Understanding how derivation works in practice, training examples
-
----
-
-## 🎯 Quick Start
-
-### For Implementers
-
-1. **Read:** `documentation-derivation-strategy.md` (full specs)
-2. **Study:** `derivation-example-walkthrough.md` (concrete example)
-3. **Implement:** Claude Code skills for derivation
-4. **Test:** Run example scenario to validate
-
-### For Users
-
-1. **Understand:** Read the walkthrough example first
-2. **Try:** Use `/loom-generate` with natural language
-3. **Review:** Approve AI-generated docs at each level
-4. **Validate:** Run `/loom-validate` to check quality
-
----
-
-## 🔄 Derivation Levels Summary
+## Derivation Szintek
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│ L0: FOUNDATIONAL (Human-Provided)                       │
-│   ➜ domain-vocabulary.md, user-stories.md, NFRs        │
-│   Human: 80% │ AI: 20%                                  │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────┐
-│ L1: PRIMARY DERIVATION (AI from L0)                     │
-│   ➜ domain-model.md, acceptance-criteria.md,           │
-│     business-rules.md, bounded-context-map.md           │
-│   Human: 20% (review) │ AI: 80%                         │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────┐
-│ L2: SECONDARY DERIVATION (AI from L0+L1)                │
-│   ➜ interface-contracts.md, sequence-design.md,        │
-│     initial-data-model.md, aggregate-design.md          │
-│   Human: 10% (optional) │ AI: 90%                       │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────┐
-│ L3: TERTIARY DERIVATION (AI from L0+L1+L2)              │
-│   ➜ test-case.md (TDAI!), feature-tickets.md,          │
-│     service-boundaries.md, event-message-design.md      │
-│   Human: 5% (test plan) │ AI: 95%                       │
-└─────────────────────────────────────────────────────────┘
+L0: FOUNDATIONAL (Human Input)
+  └─ user-stories, domain-vocabulary, NFRs
+
+L1: PRIMARY DERIVATION (AI 80%)
+  └─ domain-model, acceptance-criteria, business-rules, bounded-context
+
+L2: SECONDARY DERIVATION (AI 90%)
+  └─ interface-contracts, sequence-design, data-model, aggregate-design
+  └─ tech-specs (technical specifications)
+
+L3: TERTIARY DERIVATION (AI 95%)
+  └─ test-cases, api-spec, implementation-skeletons
+  └─ feature-tickets, service-boundaries, event-design, dependency-graph
 ```
 
----
+## Implementáció (loom-cli)
 
-## 🤖 Key AI Agents
+### L1 Derivation
+```bash
+loom derive l1 --input l0-folder --output l1-folder
+```
 
-| Agent | Derivation | Input | Output | Approval |
-|-------|------------|-------|--------|----------|
-| **DomainModelAgent** | L0→L1 | vocabulary | domain-model.md | Required |
-| **AcceptanceCriteriaAgent** | L0→L1 | user-stories | acceptance-criteria.md | Required |
-| **BusinessRulesAgent** | L0→L1 | vocab + stories | business-rules.md | Optional |
-| **InterfaceContractAgent** | L1→L2 | model + AC + rules | interface-contracts.md | Required |
-| **SequenceDesignAgent** | L1→L2 | model + stories | sequence-design.md | Optional |
-| **TestGeneratorAgent** | L2→L3 | AC + contracts | test-case.md | Test plan |
-| **FeatureTicketAgent** | L2→L3 | stories + AC | feature-tickets.md | Optional |
+### L2 Derivation
+```bash
+loom derive l2 --input l1-folder --output l2-folder
+```
 
----
+### L3 Derivation
+```bash
+loom derive l3 --input l2-folder --output l3-folder
+```
 
-## ✅ Validation Checklist
+### Validation
+```bash
+loom validate --dir output-folder
+```
 
-After derivation, validate:
+## Prompt Fájlok
 
-- [ ] **Structural:** All sections present, YAML valid, IDs follow conventions
-- [ ] **Traceability:** All links valid, bidirectional links consistent
-- [ ] **Content:** No duplicate IDs, no contradictions, all references exist
-- [ ] **Completeness:** All AC have tests, all US have AC, all entities covered
-- [ ] **Test Quality:** ≥20% negative tests, 70:20:10 pyramid, hallucination tests
+A derivation promptok: `loom-tooling/loom-cli/prompts/`
 
-**Command:** `/loom-validate`
+- `derive-l2.md` - L2 fő derivation
+- `derive-tech-specs.md` - Technical specifications
+- `derive-test-cases.md` - Test cases (L3)
+- `derive-l3.md` - L3 fő derivation
+- `derive-l3-api.md` - OpenAPI spec generálás
+- `derive-l3-skeletons.md` - Implementation skeletons
+- `derive-feature-tickets.md` - Feature tickets
+- `derive-service-boundaries.md` - Service boundaries
+- `derive-event-design.md` - Event design
+- `derive-dependency-graph.md` - Dependency graph
 
----
+## ID Conventions
 
-## 📊 Expected Benefits
+| Szint | Prefix | Példa |
+|-------|--------|-------|
+| L1 | ENT-, AC-, BR- | ENT-CUST-001, AC-ORD-002 |
+| L2 | TS-, DM-, SEQ- | TS-CUST-001, DM-001 |
+| L3 | TC-, SKEL-, DEP-, EVT-, CMD-, SVC-, FDT- | TC-ORD-001, SKEL-CUST-001 |
 
-### Time Savings
+## Archivált Dokumentumok
 
-| Task | Manual | With Loom | Savings |
-|------|--------|-----------|---------|
-| Write acceptance criteria | 1-2 hours | 5 min (review) | 95% |
-| Design API contracts | 2-3 hours | 10 min (review) | 90% |
-| Create test cases | 3-4 hours | 10 min (test plan) | 95% |
-| Update all related docs | 1-2 hours | 5 min | 95% |
-| **Total per feature** | **7-11 hours** | **30 min** | **95%** |
+A `archive/` mappában találhatók a befejezett implementációs tervek:
 
-### Quality Improvements
+- `derivation-gap-implementation-plan.md` - Gap analysis (COMPLETED)
+- `loom-cli-refactoring-plan.md` - R1-R6 refactoring (COMPLETED)
+- `prompt-engineering-improvement-plan.md` - P1-P8 prompt improvements (COMPLETED)
+- `derivation-implementation-plan.md` - Original plan (SUPERSEDED)
+- `api-based-derivation-architecture.md` - API architecture (SUPERSEDED)
 
-- ✅ **100% traceability** (every requirement → code → test)
-- ✅ **90%+ hallucination detection** (TDAI with negative tests)
-- ✅ **0% documentation drift** (AI validates consistency)
-- ✅ **Comprehensive test coverage** (10+ tests per feature)
+## Kapcsolódó
 
----
-
-## 🚀 Implementation Roadmap
-
-### Phase 1: Foundation (Week 1-2)
-- [ ] Implement L0 → L1 derivations
-- [ ] Basic validation (structure, traceability)
-- [ ] Human approval workflow (Claude Code)
-- [ ] Example project (TODO app)
-
-### Phase 2: Advanced Derivation (Week 3-4)
-- [ ] Implement L1 → L2 derivations
-- [ ] Implement L2 → L3 derivations (TDAI!)
-- [ ] Automated validation
-- [ ] Dependency graph visualization
-
-### Phase 3: Intelligence (Week 5-6)
-- [ ] AI learns from corrections
-- [ ] Confidence scoring (auto-approve)
-- [ ] Incremental re-derivation
-- [ ] Analytics dashboard
-
----
-
-## 💡 Best Practices
-
-### DO ✅
-- Start with high-quality foundational docs (L0)
-- Review and approve L1 derivations (high impact)
-- Run validation after every derivation
-- Use traceability to understand change impact
-- Iterate on derivation rules based on feedback
-
-### DON'T ❌
-- Skip validation steps
-- Auto-approve foundational derivations (L0→L1)
-- Manually edit derived docs (re-derive instead!)
-- Ignore derivation errors/warnings
-- Break traceability links
-
----
-
-## 📖 Related Documentation
-
-### Core Concepts (5 Pillars)
-- `documentation-derivation-strategy.md` - L0→L3 Documentation Derivation (1st pillar)
-- `../core-concepts/test-driven-ai-development.md` - TDAI methodology (2nd pillar)
-- `../core-concepts/bidirectional-traceability-design.md` - Traceability (3rd pillar)
-- `../core-concepts/structured-interview-pattern.md` - Structured Interview (4th pillar)
-- `../core-concepts/knowledge-navigation-architecture.md` - Knowledge-Enhanced RAG (5th pillar)
-
-### Evaluation
-- `sonnett-evaluation-02.md` - Comprehensive system evaluation
-- Overall AI-PDS score: **7.5/10**
-
----
-
-## 🎓 Learning Path
-
-**For new users:**
-1. Read: `derivation-example-walkthrough.md` (30 min)
-2. Try: Generate docs for a simple feature (30 min)
-3. Study: `documentation-derivation-strategy.md` (1 hour)
-4. Practice: Real project feature (2 hours)
-
-**For implementers:**
-1. Study: Full derivation strategy (2 hours)
-2. Review: Example walkthrough code (1 hour)
-3. Prototype: Single derivation (L0→L1) (4 hours)
-4. Test: Run example scenario (2 hours)
-5. Iterate: Improve based on results (ongoing)
-
----
-
-## 🔗 Quick Links
-
-- **Strategy Doc:** `documentation-derivation-strategy.md`
-- **Example Walkthrough:** `derivation-example-walkthrough.md`
-- **Evaluation:** `sonnett-evaluation-02.md`
-- **Example Structure:** `ai-pds-specification/9000-appendix/9200-example-ai-pds/`
-
----
-
-## 📞 Support
-
-**Questions?**
-- Review the example walkthrough for practical guidance
-- Check the strategy doc for detailed specs
-- Study the example AI-PDS structure for reference
-
-**Issues?**
-- Validation errors → Check traceability links
-- Derivation quality → Review input docs (L0)
-- AI hallucinations → Check test coverage (negative tests!)
-
----
-
-*This derivation system is the heart of Loom (AI-PDS). It transforms simple human inputs into comprehensive, traceable, validated documentation with 95% time savings.*
-
-*Ready to start? Begin with the example walkthrough!*
+- `loom-tooling/loom-cli/` - CLI implementáció
+- `loom-tooling/test/benchmark/` - Benchmark teszt eredmények
+- `ai-dop-spec/` - AI-DOP specifikáció
