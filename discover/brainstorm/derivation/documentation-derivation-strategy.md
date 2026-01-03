@@ -959,6 +959,14 @@ loom-cli cascade --input-file story.md --output-dir ./specs --from l2
 - [ ] Interaktív interview a cascade flow-ban
 - [ ] Dependency-aware re-derivation (csak érintett dokumentumok)
 
+**L1→L2 Interview (Planned)**
+- [ ] Technológiai döntések interview L1 és L2 deriválás között
+- [ ] Kérdések: framework választás, adatbázis típus, API stílus (REST/GraphQL/gRPC), auth megközelítés
+- [ ] Új parancs: `loom-cli interview-l2 --init ./l1 --state ./l2-decisions.json`
+- [ ] Cascade integráció: `--skip-l2-interview` flag
+- [ ] Output: `l2-decisions.md` technológiai döntésekkel
+- [ ] L2 deriválás használja az L2 döntéseket (konkrét framework, lib nevek)
+
 **Natural language interface** (Planned)
 - [ ] Intent Parser: természetes nyelvű input elemzése
 - [ ] Automatikus derivation plan generálás
