@@ -927,27 +927,45 @@ Előnyök lennének:
 - [x] Automated validation - `loom-cli validate --level ALL`
 - [x] Dependency graph visualization - Mermaid diagrams in dependency-graph.md
 
-### Phase 2.5: Validation Enhancements (Planned)
-- [ ] YAML frontmatter validáció (status, date mezők)
-- [ ] Folder struktúra validáció (dokumentum típus → elvárt mappa)
-- [ ] V004: Bidirectional link check (jelenleg SKIP)
-- [ ] V006: Entity-aggregate validáció (jelenleg SKIP)
-- [ ] V007: Service-interface contract validáció (jelenleg SKIP)
+### Phase 2.5: Validation Enhancements ✅ COMPLETED
+- [x] YAML frontmatter generálás (title, generated, status, level, loom-cli-version)
+- [x] Level-based folder struktúra dokumentáció (l1/, l2/, l3/)
+- [x] `loom-cli sync-links` - Hiányzó bidirectional linkek automatikus javítása
+- [x] V006: Entity-aggregate validáció
+- [x] V007: Service-interface contract validáció
 
-### Phase 3: Agent System Features (Planned)
+### Phase 3: Agent System Features (In Progress)
 
-**Kaszkád deriváció**
-- [ ] Változás automatikus propagálása függő szintekre
-- [ ] Új user story → AC → contracts → tests (egy paranccsal)
+**Kaszkád deriváció** ✅ COMPLETED
+- [x] Teljes pipeline egy paranccsal: `loom-cli cascade`
+- [x] State tracking és resume (`--resume` flag)
+- [x] Skip interview opció (`--skip-interview` flag)
+- [x] Adott szinttől újra-deriválás (`--from l1|l2|l3`)
+- [x] Automatikus l1/, l2/, l3/ directory struktúra
+
+```bash
+# Használat
+loom-cli cascade --input-file story.md --output-dir ./specs --skip-interview
+
+# Resume megszakított deriváció
+loom-cli cascade --output-dir ./specs --resume
+
+# Újra-deriválás L2-től
+loom-cli cascade --input-file story.md --output-dir ./specs --from l2
+```
+
+**Jövőbeli bővítések (cascade):**
+- [ ] Change detection (input hash összehasonlítás → automatikus re-deriváció)
+- [ ] Interaktív interview a cascade flow-ban
 - [ ] Dependency-aware re-derivation (csak érintett dokumentumok)
 
-**Natural language interface**
+**Natural language interface** (Planned)
 - [ ] Intent Parser: természetes nyelvű input elemzése
 - [ ] Automatikus derivation plan generálás
 - [ ] Érintett entitások/dokumentumok azonosítása
 - [ ] Példa: `loom generate "Add quote reminder email feature"`
 
-**Intelligens approval workflow**
+**Intelligens approval workflow** (Planned)
 - [ ] L1: mindig emberi jóváhagyás (alapvető hatás)
 - [ ] L2: opcionális (contracts igen, többi auto)
 - [ ] L3: test plan jóváhagyás, generálás automatikus
