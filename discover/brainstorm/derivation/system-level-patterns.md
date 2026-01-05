@@ -36,6 +36,39 @@ Code
 
 ---
 
+## Döntések összefoglaló táblázata
+
+| Döntés | Input forrás | Típus | Output dokumentum(ok) |
+|--------|--------------|-------|----------------------|
+| **Deployment Architecture** | L0 NFR + L1 bounded-context-map + Interview | Interview | L2 tech-specs.md, L3 service-boundaries.md |
+| **Code Organization** | Fix default (Clean Architecture) | Automatikus | L4 module-design.md |
+| **CQRS** | L0 NFR + L1 + Interview | Interview | L2 tech-specs.md, L2 initial-data-model.md |
+| **Event Sourcing** | L0 NFR + L1 + Interview | Interview | L2 tech-specs.md, L2 initial-data-model.md |
+| **Aggregate/Repository** | L2 aggregate-design | Automatikus | L2 aggregate-design.md, L4 module-design.md |
+| **Value Object** | L1 domain-model | Automatikus | L2 aggregate-design.md |
+| **Domain Event** | L2 sequence-design | Automatikus | L3 event-message-design.md |
+| **Specification** | L1 business-rules → L2 | Automatikus | L2 aggregate-design.md |
+| **Service Layer** | L3 service-boundaries | Automatikus | L3 service-boundaries.md |
+| **Unit of Work** | L1 domain-model + Interview | Interview | L2 tech-specs.md, L4 patterns.md |
+| **Factory Method** | L2 aggregate-design | Automatikus | L4 coding-standards.md |
+| **Abstract Factory** | L0 NFR + Interview | Interview | L4 patterns.md |
+| **Observer** | L2 sequence-design | Automatikus | L3 event-message-design.md |
+| **Adapter** | L1 bounded-context-map | Automatikus | L3 service-boundaries.md, L4 module-design.md |
+| **Bridge** | L0 NFR + Interview | Interview | L4 module-design.md |
+| **Composite** | L1 domain-model | Automatikus | L2 aggregate-design.md |
+| **Decorator** | L0 NFR + Interview | Interview | L4 patterns.md |
+| **Facade** | L3 service-boundaries | Automatikus | L3 service-boundaries.md, L4 module-design.md |
+| **Strategy** | L1 business-rules | Automatikus | L2 aggregate-design.md, L4 module-design.md |
+| **Command** | L0 NFR + CQRS döntés + Interview | Interview | L2 tech-specs.md, L4 patterns.md |
+| **Chain of Responsibility** | L0 NFR | Automatikus | L3 openapi.json (middleware), L4 module-design.md |
+| **Mediator** | Interview (choreography vs orchestration) | Interview | L3 event-message-design.md, L4 patterns.md |
+
+**Legenda:**
+- **Automatikus**: L0/L1/L2 tartalmából deriválható, nincs interview kérdés
+- **Interview**: User interakció szükséges az Architecture Interview során
+
+---
+
 ## 1. Deployment Architecture
 
 ### Spektrum
@@ -1197,6 +1230,90 @@ Microservices / distributed?
 - Egyszerű event-driven → Observer automatikus
 - Komplex orchestration → Interview kérdés
 - Saga pattern → Mediator ajánlott
+
+---
+
+## 6. Pattern döntések szintjei és L4 Registry
+
+### Döntési szintek
+
+A pattern döntések **különböző szinteken** születnek:
+
+| Döntés szint | Pattern példák |
+|--------------|----------------|
+| **L0 NFR** | Decorator, Chain of Responsibility |
+| **L1 domain/rules** | Composite, Strategy, Adapter |
+| **L2 aggregate/sequence** | Factory Method, Observer, Repository |
+| **L3 service-boundaries** | Facade |
+| **Interview** | Abstract Factory, Bridge, Command, Mediator |
+
+**Következmény:** Nem lehet egyetlen L2 dokumentumban tárolni az összes pattern döntést!
+
+### Javasolt megoldás: Hierarchikus + L4 Registry
+
+```
+L2 tech-specs.md      → L2-n eldőlő patternek (Factory, Observer)
+L3 service-boundaries → L3-on eldőlő patternek (Facade)
+       ↓
+L4 patterns.md        → ÖSSZEFOGLALÓ REGISTRY
+                         (minden pattern, forrás referenciával)
+```
+
+### L4 patterns.md struktúra
+
+```markdown
+## Pattern Registry
+
+| Pattern | Forrás | Referencia |
+|---------|--------|------------|
+| Factory Method | L2 | See: l2/aggregate-design.md, DP-FAC-001 |
+| Observer | L2 | See: l2/sequence-design.md, DP-OBS-001 |
+| Facade | L3 | See: l3/service-boundaries.md, DP-FAC-001 |
+| Adapter | L1→L3 | See: l3/service-boundaries.md, DP-ADP-001 |
+
+## Implementációs szabályok
+[Konkrét kód minták, validációs szabályok]
+```
+
+### Előnyök
+
+1. **Döntések ott vannak, ahol születnek** (L2/L3) - traceability megmarad
+2. **L4 patterns.md** = implementálónak összefoglaló "cheat sheet"
+3. **Kód komment**: `// Implements: DP-FAC-001 (See: l2/aggregate-design.md)`
+
+### "Szem előtt" tartás implementálás során
+
+A pattern döntések akkor érvényesülnek, ha az implementáló számára láthatók:
+
+**1. CLAUDE.md - Kritikus Pattern Döntések táblázat**
+
+```markdown
+## Kritikus Pattern Döntések
+
+| Scope | Pattern | Szabály |
+|-------|---------|---------|
+| Minden aggregate | Factory | `New{Name}()` - validációval |
+| External service | Adapter | Interface + impl infrastructure/ alatt |
+| Cross-aggregate | Observer | Domain Event, ne közvetlen hívás |
+```
+
+**2. Fázis promptokban explicit követelmények**
+
+```markdown
+## Pattern követelmények ERRE A FÁZISRA:
+- [ ] Factory pattern minden aggregate creation-höz
+- [ ] Adapter pattern az external API hívásokhoz
+```
+
+**3. Definition of Done checklist**
+
+```markdown
+## DoD - Phase N
+- [ ] Kód HIBA NÉLKÜL build-el
+- [ ] Trace kommentek megvannak
+- [ ] **Factory pattern:** Nincs közvetlen struct literal aggregate-re
+- [ ] **Adapter pattern:** Külső API = interface + adapter
+```
 
 ---
 
